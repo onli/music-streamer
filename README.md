@@ -1,5 +1,6 @@
 music-streamer
-==============Listen to music from your own server in your browser using HTML 5.
+==============
+Listen to music from your own server in your browser using HTML 5.
 
 Requires: 
  * ruby
