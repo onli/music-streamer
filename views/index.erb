@@ -1,0 +1,23 @@
+<%# -*- encoding : utf-8 -*- %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>streamer - your own music cloud</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="/style.css">
+        <script src="/snack-min.js"></script>
+        <script src="/player.js" defer></script>
+    </head>
+    <body>
+        <select id="mediaDB" name="mediaDB" multiple>
+            <% mediaDB.each do |artist, albums| %>
+                <optgroup label="<%= artist %>">
+                    <% albums.each do |album| %>
+                        <option><%= album %></option>
+                    <% end %>
+                </optgroup>
+            <% end %>
+        </select>
+    </body>
+</html>

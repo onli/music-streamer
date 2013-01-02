@@ -1,0 +1,15 @@
+<%# -*- encoding : utf-8 -*- %>
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        1/2
+        <%= render_login_button %>
+        <% if authorized? %>
+            <p>Logged in as <%= authorized_email %></p>
+            <form action="/addAdmin" method="post">
+                <button type="submit">Next</button>
+            </form>
+        <% end %>
+    </body>
+</html>

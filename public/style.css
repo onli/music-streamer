@@ -1,0 +1,28 @@
+html {
+    font-family: ubuntu, helvetica, arial, sans-serif;
+    font-weight: 400;
+    background-color: white;
+    color: #333;
+}
+
+body {
+    padding-left: 2em;
+    margin: auto;
+    padding-top: 1em;
+}
+
+#mediaDB {
+    margin-right: 3em;
+    height: 100%;
+}
+
+#playlist li.active {
+    opacity: 1;
+}
+
+#playlist li {
+    opacity: 0.8;
+}
+
+
+
