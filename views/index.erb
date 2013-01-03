@@ -8,18 +8,24 @@
         <link rel="stylesheet" href="/style.css">
         <script src="/snack-min.js"></script>
         <script src="/player.js" defer></script>
+        <script src="/mediaDBControls.js" defer></script>
     </head>
     <body>
         <section id="media">
-            <select id="mediaDB" name="mediaDB" multiple>
-                <% mediaDB.each do |artist, albums| %>
-                    <optgroup label="<%= artist %>">
-                        <% albums.each do |album| %>
-                            <option><%= album %></option>
-                        <% end %>
-                    </optgroup>
-                <% end %>
-            </select>
+            <section id="mediaDBList">
+                <div id="mediaDBControls">
+                    <progress id="indexProgress" value="0"></progress><button id="updateDB"><img src="/refresh.png" width="10"/></button>
+                </div>
+                <select id="mediaDB" name="mediaDB" multiple>
+                    <% mediaDB.each do |artist, albums| %>
+                        <optgroup label="<%= artist %>">
+                            <% albums.each do |album| %>
+                                <option><%= album %></option>
+                            <% end %>
+                        </optgroup>
+                    <% end %>
+                </select>
+            </section>
             <section id="currentMedia">
 
             </section>

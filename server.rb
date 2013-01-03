@@ -71,6 +71,12 @@ post '/setOption' do
     redirect back
 end
 
+post '/updateDB' do
+    protected!
+    Database.new.updateDB
+    "true"
+end
+
 get '/getTracks' do
     protected!
     puts "getTracks"
