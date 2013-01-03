@@ -7,7 +7,7 @@ require 'filemagic'
 require './database.rb'
 
 set :sessions, true
-# prevent allegedly session-hijacking from the ajax-requests
+# session-hijacking-protection were triggered by ajax-requests
 set :protection, except: :session_hijacking
 
 helpers do
@@ -32,6 +32,10 @@ helpers do
     def firstUse?
         return Database.new.firstUse?
     end
+    
+    def emptyMediaDB?
+        return Database.new.emptyMediaDB?
+    end
 end
 
 get '/' do
@@ -49,6 +53,11 @@ get '/' do
             erb :index, :locals => {:mediaDB => db.getMediaDB}
         end
     end
+end
+
+get '/setDB' do
+    session[:origin] = back
+    erb :setDB, :locals => {:mediaDir => Database.new.getOption("mediaDir")}
 end
 
 post '/addAdmin' do

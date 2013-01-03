@@ -1,12 +1,19 @@
 <%# -*- encoding : utf-8 -*- %>
 <!DOCTYPE html>
 <html>
-    <head></head>
+    <head>
+        <title>streamer - your own music cloud</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="/style.css">
+    </head>
     <body>
-        2/2
+        <% if emptyMediaDB? %>
+            2/2
+        <% end %>
         <form action="/setOption" method="post">
             <input type="hidden" name="name" value="mediaDir" />
-            <input type="text" name="value" required></input>
+            <label>Path to media directory: <input type="text" name="value" required value="<%= mediaDir %>"></input></label>
             <button type="submit">OK</button>
         </form>
     </body>

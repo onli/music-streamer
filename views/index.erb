@@ -14,7 +14,9 @@
         <section id="media">
             <section id="mediaDBList">
                 <div id="mediaDBControls">
-                    <progress id="indexProgress" value="0"></progress><button id="updateDB"><img src="/refresh.png" width="10"/></button>
+                    <a href="/setDB"><button id="setDB"><img src="/folder.png" alt="media dir" title="set media directory" width="10"/></button></a>
+                    <progress id="indexProgress" value="0"></progress>
+                    <button id="updateDB"><img src="/refresh.png" width="10"/></button>
                 </div>
                 <select id="mediaDB" name="mediaDB" multiple>
                     <% mediaDB.each do |artist, albums| %>

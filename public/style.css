@@ -27,8 +27,16 @@ body {
     margin-left: 0.1em;
 }
 
+#setDB {
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    margin-right: 0.1em;
+}
+
 #mediaDB {
     max-height: 700px;
+    width: 100%;
 }
 
 #mediaDBControls {
@@ -45,7 +53,7 @@ body {
 }
 
 #indexProgress {
-    max-width: 50%;
+    max-width: 90%;
 }
 
 
