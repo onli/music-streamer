@@ -34,6 +34,15 @@ class Database
         end
         return mail.empty?
     end
+
+    def emptyMediaDB?
+        begin
+            id = @db.execute("SELECT id FROM media LIMIT 1;")
+        rescue => error
+            puts error
+        end
+        return id.empty?
+    end
     
     def updateDB
         mediaDir = Dir.new(self.getOption("mediaDir"))

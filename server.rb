@@ -39,7 +39,9 @@ get '/' do
         if db.getOption("mediaDir") == nil
             erb :setDB
         else
-            db.updateDB
+            if db.emptyMediaDB?
+                db.updateDB
+            end
             erb :index, :locals => {:mediaDB => db.getMediaDB}
         end
     end
