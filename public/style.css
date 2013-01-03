@@ -11,6 +11,11 @@ body {
     padding-top: 1em;
 }
 
+#media {
+    display: -webkit-flex;
+    display: flex;
+}
+
 #mediaDB {
     margin-right: 3em;
     height: 100%;

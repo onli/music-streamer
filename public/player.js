@@ -20,7 +20,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
             showPlaylist(songs);
             var current = 0;
 
-            insertOrReplace('#player', createPlayer(0, songs));
+            insertOrReplace('#player', createPlayer(0, songs), '#currentMedia');
             
         });
     }
@@ -36,7 +36,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
             songEntry.id = "song" + index;
             playlist.appendChild(songEntry);
         });
-        insertOrReplace('#playlist', playlist);
+        insertOrReplace('#playlist', playlist, '#currentMedia');
     }
 
     function showNextButton(index) {
@@ -50,7 +50,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
             //~ var event = document.createEvent("HTMLEvents");
             //~ event.initEvent("ended", true, true);
             //~ document.querySelector('#player').dispatchEvent(event);
-            insertOrReplace('#player', createPlayer(index + 1, songs));
+            insertOrReplace('#player', createPlayer(index + 1, songs), '#currentMedia');
         });
     }
 
@@ -62,7 +62,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
         snack.wrap(prev).attach("click", function() {
             removeOldControls();
             
-            insertOrReplace('#player', createPlayer(index - 1, songs));
+            insertOrReplace('#player', createPlayer(index - 1, songs), '#currentMedia');
         });
     }
 
@@ -96,7 +96,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
         snack.wrap(player).attach("ended", function() {
             var newPlayer = createPlayer(index + 1, songs);
             removeOldControls();
-            document.querySelector('body').replaceChild(newPlayer, player);
+            insertOrReplace('#player', newPlayer);
             newPlayer.play();
         });
         
@@ -133,12 +133,15 @@ snack.wrap("#mediaDB").attach("change", function(event) {
         }
     }
 
-    function insertOrReplace(selector, newElement) {
+    function insertOrReplace(selector, newElement, container) {
+        if (typeof(container) === "undefined") {
+            container = 'body';
+        }
         var oldElement = document.querySelector(selector);
         if (oldElement) {
             oldElement.parentNode.replaceChild(newElement, oldElement);
         } else {
-            document.querySelector('body').appendChild(newElement);
+            document.querySelector(container).appendChild(newElement);
         }
     }
 });

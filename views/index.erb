@@ -10,14 +10,19 @@
         <script src="/player.js" defer></script>
     </head>
     <body>
-        <select id="mediaDB" name="mediaDB" multiple>
-            <% mediaDB.each do |artist, albums| %>
-                <optgroup label="<%= artist %>">
-                    <% albums.each do |album| %>
-                        <option><%= album %></option>
-                    <% end %>
-                </optgroup>
-            <% end %>
-        </select>
+        <section id="media">
+            <select id="mediaDB" name="mediaDB" multiple>
+                <% mediaDB.each do |artist, albums| %>
+                    <optgroup label="<%= artist %>">
+                        <% albums.each do |album| %>
+                            <option><%= album %></option>
+                        <% end %>
+                    </optgroup>
+                <% end %>
+            </select>
+            <section id="currentMedia">
+
+            </section>
+        </section>
     </body>
 </html>

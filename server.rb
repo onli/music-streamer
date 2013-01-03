@@ -28,6 +28,10 @@ helpers do
             throw(:halt, [401, "Not authorized\n"])
         end
     end
+
+    def firstUse?
+        return Database.new.firstUse?
+    end
 end
 
 get '/' do
