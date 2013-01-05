@@ -18,15 +18,7 @@
                     <progress id="indexProgress" value="0"></progress>
                     <button id="updateDB"><img src="/refresh.png" width="10"/></button>
                 </div>
-                <select id="mediaDB" name="mediaDB" multiple>
-                    <% mediaDB.each do |artist, albums| %>
-                        <optgroup label="<%= artist %>">
-                            <% albums.each do |album| %>
-                                <option><%= album %></option>
-                            <% end %>
-                        </optgroup>
-                    <% end %>
-                </select>
+                <%= erb :mediaDB, :locals => {:mediaDB => mediaDB} %> 
             </section>
             <section id="currentMedia">
 

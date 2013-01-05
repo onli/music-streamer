@@ -37,6 +37,9 @@ body {
 #mediaDB {
     max-height: 700px;
     width: 100%;
+    height: auto;
+    -webkit-transition: all 300ms ease;
+    transition: all 300ms ease;
 }
 
 #mediaDBControls {

@@ -78,12 +78,12 @@ snack.wrap("#mediaDB").attach("change", function(event) {
     }
 
     function createPlayer(index, songs) {
-        oldPlayer = document.querySelector('#player');
+        var oldPlayer = document.querySelector('#player');
         var player = document.createElement("audio");
         player.id = "player";
         player.setAttribute("controls", true);
         player.setAttribute("preload", true);
-        source = document.createElement("source");
+        var source = document.createElement("source");
         source.src = "/track/" + songs[index].id;
         
         player.appendChild(source);

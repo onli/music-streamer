@@ -82,8 +82,9 @@ end
 
 post '/updateDB' do
     protected!
-    Database.new.updateDB
-    "true"
+    db = Database.new
+    db.updateDB
+    erb :mediaDB, :locals => {:mediaDB => db.getMediaDB}
 end
 
 get '/getTracks' do
