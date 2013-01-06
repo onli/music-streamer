@@ -21,10 +21,10 @@ snack.wrap("#updateDB").attach("click", function() {
         mediaDB.querySelector('#mediaDB').style.opacity = 0;
         oldMediaDB.parentNode.replaceChild(mediaDB, oldMediaDB);
         adjustMediaDBHeight();
+        addPlayerFunctions();
         setTimeout(function() {
             document.querySelector('#mediaDB').style.opacity = 1;
             document.querySelector("#indexProgress").setAttribute("value", 0);
-            
             }, 300);
     });
 });
