@@ -47,8 +47,14 @@ snack.wrap("#mediaDB").attach("change", function(event) {
         
         snack.wrap(next).attach("click", function() {
             removeOldControls();
-            
-            insertOrReplace('#player', createPlayer(index + 1, songs, true), '#currentMedia');
+            if (! document.querySelector('#player').paused) {
+                // simply ceating a new player leads to a buggy deactivated player
+                var event = document.createEvent("HTMLEvents");
+                event.initEvent("ended", true, true);
+                document.querySelector('#player').dispatchEvent(event);
+            } else {
+                insertOrReplace('#player', createPlayer(index + 1, songs, true), '#currentMedia');
+            }
         });
     }
 
@@ -98,8 +104,6 @@ snack.wrap("#mediaDB").attach("change", function(event) {
             
         });
 
-        // TODO: Adjust the timer when rewinding/forwarding -> make this a object
-        var t = null;
         snack.wrap(player).attach("play", function() {
             newPlayer = createPlayer(index + 1, songs, false);
             newPlayer.pause;
