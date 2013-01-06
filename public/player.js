@@ -48,7 +48,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
         snack.wrap(next).attach("click", function() {
             removeOldControls();
             var player = document.querySelector('#player');
-            if ((! player.paused) || player.played) {
+            if ((! player.paused) || (player.played.length > 0)) {
                 // simply ceating a new player leads to a buggy deactivated player
                 var event = document.createEvent("HTMLEvents");
                 event.initEvent("ended", true, true);
