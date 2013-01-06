@@ -11,6 +11,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
             }
         }
         var songs = [];
+
         snack.request(options, function(err, res) {
             if (err) {
                 alert('error getting tracks: ' + err);
@@ -20,7 +21,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
             showPlaylist(songs);
             var current = 0;
 
-            insertOrReplace('#player', createPlayer(0, songs), '#currentMedia');
+            insertOrReplace('#player', createPlayer(0, songs, true), '#currentMedia');
             
         });
     }
@@ -47,10 +48,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
         snack.wrap(next).attach("click", function() {
             removeOldControls();
             
-            //~ var event = document.createEvent("HTMLEvents");
-            //~ event.initEvent("ended", true, true);
-            //~ document.querySelector('#player').dispatchEvent(event);
-            insertOrReplace('#player', createPlayer(index + 1, songs), '#currentMedia');
+            insertOrReplace('#player', createPlayer(index + 1, songs, true), '#currentMedia');
         });
     }
 
@@ -62,7 +60,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
         snack.wrap(prev).attach("click", function() {
             removeOldControls();
             
-            insertOrReplace('#player', createPlayer(index - 1, songs), '#currentMedia');
+            insertOrReplace('#player', createPlayer(index - 1, songs, true), '#currentMedia');
         });
     }
 
@@ -77,7 +75,7 @@ snack.wrap("#mediaDB").attach("change", function(event) {
         return button;
     }
 
-    function createPlayer(index, songs) {
+    function createPlayer(index, songs, active) {
         var oldPlayer = document.querySelector('#player');
         var player = document.createElement("audio");
         player.id = "player";
@@ -87,35 +85,52 @@ snack.wrap("#mediaDB").attach("change", function(event) {
         source.src = "/track/" + songs[index].id;
         
         player.appendChild(source);
+
+        if (active) {
+            setPlaylistTo(index);
+        }
+        var newPlayer = "";
+        snack.wrap(player).attach("ended", function() {
+            newPlayer.play();
+            removeOldControls();
+            setPlaylistTo(index+1);
+            insertOrReplace('#player', newPlayer);
+            
+        });
+
+        // TODO: Adjust the timer when rewinding/forwarding -> make this a object
+        var t = null;
+        snack.wrap(player).attach("play", function() {
+            newPlayer = createPlayer(index + 1, songs, false);
+            newPlayer.pause;
+        })
         
+        transferPlayerState(player, oldPlayer, active);
+        return player
+    }
+
+    function setPlaylistTo(index) {
         if (document.querySelector('.active')) {
             snack.wrap('.active').removeClass("active");
         }
         snack.wrap('#song'+index).addClass("active");
-            
-        snack.wrap(player).attach("ended", function() {
-            var newPlayer = createPlayer(index + 1, songs);
-            removeOldControls();
-            insertOrReplace('#player', newPlayer);
-            newPlayer.play();
-        });
-        
+
         if (index > 0) {
             showPrevButton(index);
         }
         if (index < songs.length) {
             showNextButton(index);
         }
-        transferPlayerState(player, oldPlayer);
-        return player
     }
 
-    function transferPlayerState(player, oldPlayer) {
+    function transferPlayerState(player, oldPlayer, active) {
         if (oldPlayer) {
-            if (oldPlayer.paused) {
-                player.pause();
-            } else {
-                player.play();
+            if (active) {
+                if (oldPlayer.paused) {
+                    player.pause();
+                } else {
+                    player.play();
+                }
             }
             player.volume = oldPlayer.volume;
         }
