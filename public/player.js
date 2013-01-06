@@ -47,11 +47,12 @@ snack.wrap("#mediaDB").attach("change", function(event) {
         
         snack.wrap(next).attach("click", function() {
             removeOldControls();
-            if (! document.querySelector('#player').paused) {
+            var player = document.querySelector('#player');
+            if ((! player.paused) || player.played) {
                 // simply ceating a new player leads to a buggy deactivated player
                 var event = document.createEvent("HTMLEvents");
                 event.initEvent("ended", true, true);
-                document.querySelector('#player').dispatchEvent(event);
+                player.dispatchEvent(event);
             } else {
                 insertOrReplace('#player', createPlayer(index + 1, songs, true), '#currentMedia');
             }
@@ -82,6 +83,9 @@ snack.wrap("#mediaDB").attach("change", function(event) {
     }
 
     function createPlayer(index, songs, active) {
+        if (index >= songs.length) {
+            return
+        }
         var oldPlayer = document.querySelector('#player');
         var player = document.createElement("audio");
         player.id = "player";
@@ -104,10 +108,14 @@ snack.wrap("#mediaDB").attach("change", function(event) {
             
         });
 
-        snack.wrap(player).attach("play", function() {
-            newPlayer = createPlayer(index + 1, songs, false);
-            newPlayer.pause;
-        })
+        if (index < (songs.length -1)) {
+            snack.wrap(player).attach("play", function() {
+                if (! newPlayer) {
+                    newPlayer = createPlayer(index + 1, songs, false);
+                    newPlayer.pause;
+                }
+            })
+        }
         
         transferPlayerState(player, oldPlayer, active);
         return player
