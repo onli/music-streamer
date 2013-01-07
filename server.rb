@@ -98,5 +98,5 @@ get %r{/track/([0-9]+)} do |id|
     path = Database.new.getPath(id)
     type = FileMagic.new(FileMagic::MAGIC_MIME).file(path)
     content_type type
-    send_file path, :type => type, :last_modified => DateTime.now.httpdate
+    send_file path, :type => type #, :last_modified => DateTime.now.httpdate
 end

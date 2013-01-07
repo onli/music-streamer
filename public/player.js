@@ -57,8 +57,10 @@ function addPlayerFunctions() {
                     // simply ceating a new player leads to a buggy deactivated player
                     var event = document.createEvent("HTMLEvents");
                     event.initEvent("ended", true, true);
+                    abortLoad(player);
                     player.dispatchEvent(event);
                 } else {
+                    abortLoad(player);
                     insertOrReplace('#player', createPlayer(index + 1, songs, true), '#currentMedia');
                 }
             });
@@ -71,6 +73,7 @@ function addPlayerFunctions() {
 
             snack.wrap(prev).attach("click", function() {
                 removeOldControls();
+                abortLoad(player);
                 insertOrReplace('#player', createPlayer(index - 1, songs, true), '#curentMedia');
                 //~ var curTrack = document.querySelector("#player").childNodes[0].src;
                 //~ track = curTrack.substring(curTrack.lastIndexOf('/')+1) - 1;
@@ -79,6 +82,13 @@ function addPlayerFunctions() {
                 //~ document.querySelector("#player").load();
                 
             });
+        }
+
+        // Abort the network-connection to the server.
+        function abortLoad(player) {
+            player.pause();
+            player.src = "";
+            player.load();
         }
 
         function createImageButton(id, img) {
@@ -112,10 +122,10 @@ function addPlayerFunctions() {
             var newPlayer = "";
             snack.wrap(player).attach("ended", function() {
                 newPlayer.play();
+                //~ insertOrReplace('#player', createPlayer(index + 1, songs, true), '#curentMedia');
                 removeOldControls();
                 setPlaylistTo(index+1);
                 insertOrReplace('#player', newPlayer);
-                
             });
 
             if (index < (songs.length -1)) {
