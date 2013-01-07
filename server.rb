@@ -1,7 +1,6 @@
 require 'sinatra'
 require 'sinatra/browserid'
 require 'json'
-# libmagic-dev
 require 'filemagic'
 
 require './database.rb'
@@ -95,9 +94,9 @@ get '/getTracks' do
 end
 
 get %r{/track/([0-9]+)} do |id|
+    puts "requesting track #{id}"
     path = Database.new.getPath(id)
     type = FileMagic.new(FileMagic::MAGIC_MIME).file(path)
     content_type type
-    send_file path, :type => type 
-    
+    send_file path, :type => type, :last_modified => DateTime.now.httpdate
 end

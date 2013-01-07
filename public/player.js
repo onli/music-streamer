@@ -71,8 +71,13 @@ function addPlayerFunctions() {
 
             snack.wrap(prev).attach("click", function() {
                 removeOldControls();
+                insertOrReplace('#player', createPlayer(index - 1, songs, true), '#curentMedia');
+                //~ var curTrack = document.querySelector("#player").childNodes[0].src;
+                //~ track = curTrack.substring(curTrack.lastIndexOf('/')+1) - 1;
+                //~ 
+                //~ document.querySelector("#player").childNodes[0].src = "/track/" + track;
+                //~ document.querySelector("#player").load();
                 
-                insertOrReplace('#player', createPlayer(index - 1, songs, true), '#currentMedia');
             });
         }
 
