@@ -9,9 +9,9 @@ class Database
         begin
             @db.execute "CREATE TABLE IF NOT EXISTS media (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            artist TEXT,
-                            album TEXT,
-                            title TEXT,
+                            artist TEXT NOT NULL,
+                            album TEXT NOT NULL,
+                            title TEXT NOT NULL,
                             track INT,
                             path TEXT UNIQUE
                             );"
@@ -47,7 +47,6 @@ class Database
     def updateDB
         mediaDir = Dir.new(self.getOption("mediaDir"))
         Find.find("#{mediaDir.path}/") do |entry|
-            # TODO: Try to improve performance by not getting tags of already known files
             puts entry
             TagLib::FileRef.open(entry) do |fileref|
                 begin
@@ -55,6 +54,12 @@ class Database
                     self.addToDB(tag.artist, tag.album, tag.title, tag.track, entry)
                 rescue
                 end
+            end
+        end
+        @db.execute("SELECT id, path FROM media").each do |row|
+            puts row["path"]
+            if ! File.exists?(row["path"])
+                self.deleteTrack(row["id"])
             end
         end
     end
@@ -100,6 +105,14 @@ class Database
             return @db.execute("SELECT path FROM media WHERE id = ?", id)[0]['path']
         rescue => error
             puts "error getting tracks: #{error}"
+        end
+    end
+
+    def deleteTrack(id)
+        begin
+            return @db.execute("DELETE FROM media WHERE id = ?", id)
+        rescue => error
+            puts "error deleting track: #{error}"
         end
     end
     

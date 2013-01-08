@@ -1,5 +1,5 @@
 snack.wrap("#updateDB").attach("click", function() {
-    document.querySelector("#indexProgress").removeAttribute("value");
+    document.querySelector("#indexProgress").setAttribute("value", "");
     var options = {
         method: 'post',
         url: '/updateDB',
