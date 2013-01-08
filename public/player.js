@@ -38,8 +38,16 @@ function addPlayerFunctions() {
             playlist.id = "playlist";
             songs.forEach(function(song, index) {
                 var songEntry = document.createElement("li");
-                songEntry.innerHTML = song.title;
+                var songName = document.createElement("span");
+                songName.innerHTML = song.title;
+                songName.className = "songName";
+                snack.wrap(songName).attach("click", function() {
+                    removeOldControls();
+                    abortLoad(player);
+                    insertOrReplace('#player', createPlayer(index, songs, true), '#currentMedia');
+                });
                 songEntry.id = "song" + index;
+                songEntry.appendChild(songName);
                 playlist.appendChild(songEntry);
             });
             insertOrReplace('#playlist', playlist, '#currentMedia');

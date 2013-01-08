@@ -76,7 +76,11 @@ button:hover {
 
 #indexProgress {
     max-width: 90%;
-    
+}
+
+.songName:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 progress,
@@ -100,32 +104,19 @@ progress:indeterminate::-webkit-progress-bar  {
 }
 
 @-webkit-keyframes gradient_pan {
-    0% {
-        background-position: left bottom;
-    }
-    100% {
-        background-position: right bottom;
-    }
+    0% { background-position: left bottom; }
+    100% { background-position: right bottom; }
 }
 
 @-moz-keyframes gradient_pan {
-    0% {
-        background-position: left bottom;
-    }
-    100% {
-        background-position: right bottom;
-    }
+    0% { background-position: left bottom; }
+    100% { background-position: right bottom; }
 }
 
 @keyframes gradient_pan {
-    0% {
-        background-position: left bottom;
-    }
-    100% {
-        background-position: right bottom;
-    }
+    0% { background-position: left bottom; }
+    100% { background-position: right bottom; }
 }
-
 
 
 
