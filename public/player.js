@@ -44,7 +44,9 @@ function addPlayerFunctions() {
                 snack.wrap(songName).attach("click", function() {
                     removeOldControls();
                     abortLoad(player);
-                    insertOrReplace('#player', createPlayer(index, songs, true), '#currentMedia');
+                    var player = createPlayer(index, songs, true);
+                    insertOrReplace('#player', player, '#currentMedia');
+                    player.play();
                 });
                 songEntry.id = "song" + index;
                 songEntry.appendChild(songName);
