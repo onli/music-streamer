@@ -43,7 +43,7 @@ function addPlayerFunctions() {
                 songName.className = "songName";
                 snack.wrap(songName).attach("click", function() {
                     removeOldControls();
-                    abortLoad(player);
+                    abortLoad(document.querySelector('#player'));
                     var player = createPlayer(index, songs, true);
                     insertOrReplace('#player', player, '#currentMedia');
                     player.play();
@@ -85,12 +85,6 @@ function addPlayerFunctions() {
                 removeOldControls();
                 abortLoad(player);
                 insertOrReplace('#player', createPlayer(index - 1, songs, true), '#curentMedia');
-                //~ var curTrack = document.querySelector("#player").childNodes[0].src;
-                //~ track = curTrack.substring(curTrack.lastIndexOf('/')+1) - 1;
-                //~ 
-                //~ document.querySelector("#player").childNodes[0].src = "/track/" + track;
-                //~ document.querySelector("#player").load();
-                
             });
         }
 
@@ -160,7 +154,7 @@ function addPlayerFunctions() {
             if (index > 0) {
                 showPrevButton(index);
             }
-            if (index < songs.length) {
+            if (index < songs.length - 1) {
                 showNextButton(index);
             }
         }
