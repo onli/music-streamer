@@ -70,7 +70,7 @@ button:hover {
     opacity: 0.8;
 }
 
-#playlist li button:first-child {
+.songName + button {
     margin-left: 0.5em;
 }
 
