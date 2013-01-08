@@ -93,11 +93,31 @@ progress::-moz-progress-bar {
 progress:indeterminate,
 progress:indeterminate::-webkit-progress-bar  {
     background: -webkit-gradient(linear, left top, right bottom, color-stop(0%, white), color-stop(25%, grey), color-stop(50%, black), color-stop(75%, grey), color-stop(100%, white));
-    -webkit-background-size: 2000px 20px;
+    background-size: 2000px 20px;
     -webkit-animation: gradient_pan 5s infinite linear;
+    animation: gradient_pan 5s infinite linear;
+    
 }
 
 @-webkit-keyframes gradient_pan {
+    0% {
+        background-position: left bottom;
+    }
+    100% {
+        background-position: right bottom;
+    }
+}
+
+@-moz-keyframes gradient_pan {
+    0% {
+        background-position: left bottom;
+    }
+    100% {
+        background-position: right bottom;
+    }
+}
+
+@keyframes gradient_pan {
     0% {
         background-position: left bottom;
     }
