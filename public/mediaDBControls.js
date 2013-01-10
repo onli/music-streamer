@@ -1,3 +1,4 @@
+"use strict"; 
 snack.wrap("#updateDB").attach("click", function() {
     document.querySelector("#indexProgress").removeAttribute("value");
     var options = {

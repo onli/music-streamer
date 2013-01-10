@@ -1,3 +1,4 @@
+"use strict"; 
 snack.ready(function() {
     addPlayerFunctions();
 });
@@ -15,8 +16,8 @@ function addPlayerFunctions() {
                     album: album
                 }
             }
-            var songs = [];
 
+            var songs = [];
             snack.request(options, function(err, res) {
                 if (err) {
                     alert('error getting tracks: ' + err);
@@ -106,6 +107,7 @@ function addPlayerFunctions() {
             return button;
         }
 
+        
         function createPlayer(index, songs, active) {
             if (index >= songs.length) {
                 return
@@ -127,10 +129,17 @@ function addPlayerFunctions() {
             snack.wrap(player).attach("ended", function() {
                 transferPlayerState(newPlayer, player, active);
                 newPlayer.play();
-                //~ insertOrReplace('#player', createPlayer(index + 1, songs, true), '#curentMedia');
                 removeOldControls();
                 setPlaylistTo(index+1);
                 insertOrReplace('#player', newPlayer);
+            });
+
+            if (localStorage.volume) {
+                player.volume = localStorage.volume;
+            }
+
+            snack.wrap(player).attach("volumechange", function() {
+                localStorage.volume = player.volume;
             });
 
             if (index < (songs.length -1)) {
