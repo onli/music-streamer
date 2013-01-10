@@ -125,6 +125,7 @@ function addPlayerFunctions() {
             }
             var newPlayer = "";
             snack.wrap(player).attach("ended", function() {
+                transferPlayerState(newPlayer, player, active);
                 newPlayer.play();
                 //~ insertOrReplace('#player', createPlayer(index + 1, songs, true), '#curentMedia');
                 removeOldControls();
