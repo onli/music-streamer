@@ -118,7 +118,7 @@ function addPlayerFunctions() {
             player.setAttribute("controls", true);
             player.setAttribute("preload", true);
             var source = document.createElement("source");
-            source.src = "/track/" + songs[index].id;
+            source.src = "/track/" + songs[index].id +"?supportMP3="+ player.canPlayType("audio/mpeg") + "&supportOGG="+ player.canPlayType("audio/ogg") ;
             
             player.appendChild(source);
 

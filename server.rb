@@ -2,12 +2,15 @@ require 'sinatra'
 require 'sinatra/browserid'
 require 'json'
 require 'filemagic'
+require 'open3'
 
 require './database.rb'
 
 set :sessions, true
 # session-hijacking-protection were triggered by ajax-requests
 set :protection, except: :session_hijacking
+# use thin as server for streaming support (used when transcoding) 
+set :server, :thin
 
 helpers do
     include Rack::Utils
@@ -97,6 +100,77 @@ get %r{/track/([0-9]+)} do |id|
     puts "requesting track #{id}"
     path = Database.new.getPath(id)
     type = FileMagic.new(FileMagic::MAGIC_MIME).file(path)
+    
+    if type == "application/octet-stream; charset=binary"
+        # application/octetstream is the fallback, so the extension is the last hope
+        type = "audio/mpeg; charset=binary" if File.extname(path) == ".mp3"
+        type = "application/ogg; charset=binary" if File.extname(path) == ".ogg"
+    end
+
+    if (type != "application/ogg; charset=binary" &&
+        params[:supportOGG] != "" &&
+        (!(type == "audio/mpeg; charset=binary" && params[:supportMP3] != "")))
+        
+        puts "converting to ogg"
+        content_type  "application/ogg; charset=binary"
+        headers "Content-Length" => File.size(path).to_s, "Last_Modified" => DateTime.now.httpdate
+        stdin, stdout, stderr  = Open3.popen3("ffmpeg", "-loglevel", "quiet",
+                                                                    "-i", path,
+                                                                    "-f", "ogg",
+                                                                    "-y",
+                                                                    "-acodec", "libvorbis",
+                                                                    "-aq", "5",
+                                                                    "-")
+        stream do |out|
+            begin
+                loop do
+                    IO.select([stdout]) 
+                    data = stdout.read_nonblock(8192) 
+                    out << data
+                end
+            rescue Errno::EAGAIN
+                retry
+            rescue EOFError
+                puts "End of file #{path}"
+                stdin.close 
+                stdout.close
+                stderr.close
+            end
+        end
+        return
+    else
+        if ((params[:supportMP3] != "" && type != "audio/mpeg; charset=binary") &&
+            (!(params[:supportOGG] != "" && type == "application/ogg; charset=binary")))
+            puts "converting to mp3"
+            content_type  "application/ogg; charset=binary"
+            headers "Content-Length" => File.size(path).to_s, "Last_Modified" => DateTime.now.httpdate
+            stdin, stdout, stderr  = Open3.popen3("ffmpeg", "-loglevel", "quiet",
+                                                                        "-i", path,
+                                                                        "-f", "mp3",
+                                                                        "-y",
+                                                                        "-ab", "160k",
+                                                                        "-")
+            stream do |out|
+                begin
+                    loop do
+                        IO.select([stdout])
+                        data = stdout.readpartial(8192) 
+                        out << data
+                    end
+                rescue Errno::EAGAIN
+                    retry
+                rescue EOFError
+                    puts "End of file #{path}"
+                    stdin.close 
+                    stdout.close
+                    stderr.close
+                end
+            end
+            return
+        end
+    end
+
     content_type type
+    puts "send file without transcoding"
     send_file path, :type => type, :last_modified => DateTime.now.httpdate
 end
