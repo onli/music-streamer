@@ -91,7 +91,7 @@ end
 get '/getTracks' do
     protected!
     puts "getTracks"
-    tracks = Database.new.getTracks(params[:artist], params[:album]).each{ |x| x.delete_if{|key, value| key.is_a? Integer} }
+    tracks = Database.new.getTracks(params[:artist], params[:album]).delete_if{|key, value| key.is_a? Integer}
     JSON(tracks)
 end
 
