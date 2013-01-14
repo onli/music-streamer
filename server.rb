@@ -45,9 +45,8 @@ get '/' do
         erb :login
     else
         db = Database.new
-        # isAdmin
         if db.getOption("mediaDir") == nil
-            erb :setDB
+            erb :setDB, :locals => {:mediaDir => nil}
         else
             if db.emptyMediaDB?
                 db.updateDB
@@ -115,12 +114,12 @@ get %r{/track/([0-9]+)} do |id|
         content_type  "application/ogg; charset=binary"
         headers "Content-Length" => File.size(path).to_s, "Last_Modified" => DateTime.now.httpdate
         stdin, stdout, stderr  = Open3.popen3("ffmpeg", "-loglevel", "quiet",
-                                                                    "-i", path,
-                                                                    "-f", "ogg",
-                                                                    "-y",
-                                                                    "-acodec", "libvorbis",
-                                                                    "-aq", "5",
-                                                                    "-")
+                                                        "-i", path,
+                                                        "-f", "ogg",
+                                                        "-y",
+                                                        "-acodec", "libvorbis",
+                                                        "-aq", "5",
+                                                        "-")
         stream do |out|
             begin
                 loop do
@@ -145,11 +144,11 @@ get %r{/track/([0-9]+)} do |id|
             content_type  "application/ogg; charset=binary"
             headers "Content-Length" => File.size(path).to_s, "Last_Modified" => DateTime.now.httpdate
             stdin, stdout, stderr  = Open3.popen3("ffmpeg", "-loglevel", "quiet",
-                                                                        "-i", path,
-                                                                        "-f", "mp3",
-                                                                        "-y",
-                                                                        "-ab", "160k",
-                                                                        "-")
+                                                            "-i", path,
+                                                            "-f", "mp3",
+                                                            "-y",
+                                                            "-ab", "160k",
+                                                            "-")
             stream do |out|
                 begin
                     loop do
