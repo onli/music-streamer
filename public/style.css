@@ -50,6 +50,7 @@ button:hover {
 #mediaDB {
     max-height: 700px;
     width: 100%;
+    max-width: 300px;
     height: auto;
     -webkit-transition: all 300ms ease;
     transition: all 300ms ease;
@@ -75,7 +76,8 @@ button:hover {
 }
 
 #indexProgress {
-    max-width: 90%;
+    width: 90%;
+    max-width: 250px;
 }
 
 .songName:hover {
