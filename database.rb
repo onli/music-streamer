@@ -46,30 +46,69 @@ class Database
     
     def updateDB
         mediaDir = Dir.new(self.getOption("mediaDir"))
-        Find.find("#{mediaDir.path}/") do |entry|
-            puts entry
-            TagLib::FileRef.open(entry) do |fileref|
-                begin
-                    tag = fileref.tag
-                    self.addToDB(tag.artist, tag.album, tag.title, tag.track, entry)
-                rescue
+
+        @@newSongsMutex = Mutex.new
+        @@newSongsThread = Thread.new() do
+            Thread.current[:progress] = 0
+            Find.find("#{mediaDir.path}/") do |entry|
+                @@newSongsMutex.synchronize do
+                    Thread.current[:progress] += 1
                 end
+                silence_streams(STDERR) {
+                    TagLib::FileRef.open(entry) do |fileref|
+                        begin
+                            tag = fileref.tag
+                            self.addToDB(tag.artist, tag.album, tag.title, tag.track, entry)
+                        rescue => error
+                        end
+                    end
+                }
             end
         end
-        @db.execute("SELECT id, path FROM media").each do |row|
-            puts row["path"]
-            if ! File.exists?(row["path"])
-                self.deleteTrack(row["id"])
+
+        @@checkDeletedMutex = Mutex.new
+        @@checkDeletedThread = Thread.new() do
+            Thread.current[:progress] = 0
+            begin
+                @db.execute("SELECT id, path FROM media").each do |row|
+                    @@checkDeletedMutex.synchronize do
+                        Thread.current[:progress] += 1
+                    end
+                    if ! File.exists?(row["path"])
+                        self.deleteTrack(row["id"])
+                    end
+                end
+            rescue => error
+                puts "Error searching deleted songs: #{error}"
             end
+        end
+        
+        begin
+            return Find.find("#{mediaDir.path}/").count()  + @db.execute("SELECT COUNT(id) FROM media")[0]["COUNT(id)"]
+        rescue => error
+            puts "Error calculating total entries: #{error}"
+            return 0
         end
     end
+
+    def updateDone
+        return (! @@newSongsThread.alive?) && (! @@checkDeletedThread.alive?)
+    end
+
+    def updateProgress
+        @@newSongsMutex.synchronize do
+            @@checkDeletedMutex.synchronize do
+                return @@checkDeletedThread[:progress] + @@newSongsThread[:progress]
+            end
+        end
+    end 
     
     def addToDB(artist, album, title, track, path) 
         begin
             @db.execute("INSERT INTO media(artist, album, title, track, path)
                          VALUES (?, ?, ?, ?, ?)", artist, album, title, track, path)
         rescue => error
-            puts "error inserting track: #{error}"
+            #puts "error inserting track: #{error}"
         end
     end
     
@@ -132,7 +171,19 @@ class Database
             puts error
         end
     end
-    
+
+    def silence_streams(*streams)
+      on_hold = streams.collect { |stream| stream.dup }
+      streams.each do |stream|
+        stream.reopen(RUBY_PLATFORM =~ /mswin/ ? 'NUL:' : '/dev/null')
+        stream.sync = true
+      end
+      yield
+    ensure
+      streams.each_with_index do |stream, i|
+        stream.reopen(on_hold[i])
+      end
+    end
 
 end
 

@@ -24,6 +24,12 @@ button:hover {
     background-color: rgba(0,0,0,0.6);
 }
 
+button:disabled {
+    background-color: rgba(161,161,161,0.6);
+    cursor: default;
+    opacity: 0.8;
+}
+
 #media {
     display: -webkit-flex;
     display: flex;
@@ -31,6 +37,8 @@ button:hover {
 
 #currentMedia {
     margin-left: 1em;
+    display: inline-block;
+    vertical-align: top;
 }
 
 #updateDB {
@@ -51,11 +59,16 @@ button:hover {
     max-height: 700px;
     width: 100%;
     max-width: 300px;
+    min-width: 300px;
     height: auto;
     -webkit-transition: all 300ms ease;
     transition: all 300ms ease;
     background-color: rgba(0,0,0,0.4);
     color: white;
+}
+
+#mediaDBList {
+    display: inline-block;
 }
 
 #mediaDBControls {
@@ -94,12 +107,14 @@ progress::-webkit-progress-bar-value,
 progress::-webkit-progress-value,
 progress::-moz-progress-bar {
     background-color: white;
+    -webkit-animation: progress_glow 5s infinite ease;
+    animation: progress_glow 5s infinite ease;
 }
 
 progress:indeterminate,
 progress:indeterminate::-webkit-progress-bar  {
     background: -webkit-gradient(linear, left top, right bottom, color-stop(0%, white), color-stop(25%, grey), color-stop(50%, black), color-stop(75%, grey), color-stop(100%, white));
-    background-size: 2000px 20px;
+    background-size: 3000px 20px;
     -webkit-animation: gradient_pan 5s infinite linear;
     animation: gradient_pan 5s infinite linear;
     
@@ -112,7 +127,7 @@ progress:indeterminate::-webkit-progress-bar  {
 
 @-moz-keyframes gradient_pan {
     0% { background-position: left bottom; }
-    100% { background-position: right bottom; }
+    50% { background-position: right bottom; }
 }
 
 @keyframes gradient_pan {
@@ -120,6 +135,25 @@ progress:indeterminate::-webkit-progress-bar  {
     100% { background-position: right bottom; }
 }
 
+@-webkit-keyframes progress_glow {
+    0% { background-color: white;}
+    50% { background-color: rgba(255,255,255,0.7);}
+    100% { background-color: white;}
+}
 
+@keyframes progress_glow {
+    0% { background-color: white;}
+    50% { background-color: rgba(255,255,255,0.7);}
+    100% { background-color: white;}
+}
 
-
+#searchBox {
+    display: none;
+    position: absolute;
+    background-color: rgba(0,0,0,0.4);
+    width: 300px;
+    padding: 1em;
+    top: 20px;
+    right: 40px;
+    border-radius: 5px;
+}

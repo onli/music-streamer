@@ -9,8 +9,8 @@ require './database.rb'
 set :sessions, true
 # session-hijacking-protection were triggered by ajax-requests
 set :protection, except: :session_hijacking
-# use thin as server for streaming support (used when transcoding) 
-set :server, :thin
+# use server with streaming support (used when transcoding) 
+set :server, :puma
 
 helpers do
     include Rack::Utils
@@ -48,9 +48,6 @@ get '/' do
         if db.getOption("mediaDir") == nil
             erb :setDB, :locals => {:mediaDir => nil}
         else
-            if db.emptyMediaDB?
-                db.updateDB
-            end
             erb :index, :locals => {:mediaDB => db.getMediaDB}
         end
     end
@@ -83,20 +80,34 @@ end
 
 post '/updateDB' do
     protected!
-    db = Database.new
-    db.updateDB
-    erb :mediaDB, :locals => {:mediaDB => db.getMediaDB}
+    session[:updateTotal] = Database.new.updateDB
+    "Done"
+end
+
+get '/updateProgress' do
+    Database.new.updateProgress.to_s
+end
+
+get '/updateTotal' do
+    session[:updateTotal].to_s
+end
+
+get '/updateDone' do
+    Database.new.updateDone.to_s
+end
+
+get '/mediaDB' do
+    !protected!
+    erb :mediaDB, :locals => {:mediaDB => Database.new.getMediaDB}
 end
 
 get '/getTracks' do
     protected!
-    puts "getTracks"
     tracks = Database.new.getTracks(params[:artist], params[:album]).delete_if{|key, value| key.is_a? Integer}
     JSON(tracks)
 end
 
 get %r{/track/([0-9]+)} do |id|
-    puts "requesting track #{id}"
     path = Database.new.getPath(id)
     type = FileMagic.new(FileMagic::MAGIC_MIME).file(path)
     
@@ -112,7 +123,14 @@ get %r{/track/([0-9]+)} do |id|
         
         puts "converting to ogg"
         content_type  "application/ogg; charset=binary"
-        headers "Content-Length" => File.size(path).to_s, "Last_Modified" => DateTime.now.httpdate
+
+        if request.env["HTTP_RANGE"]
+            requestStart = request.env["HTTP_RANGE"].gsub(/bytes=([0-9]*)-/) { $1 }
+            puts "start: #{requestStart}"
+        end
+
+        size = File.size(path).to_s
+        headers "Content-Length" => size, "Last_Modified" => DateTime.now.httpdate #, "Accept-Ranges" => "bytes", "Content-Range" => "bytes #0-#{size}/#{size}"
         stdin, stdout, stderr  = Open3.popen3("ffmpeg", "-loglevel", "quiet",
                                                         "-i", path,
                                                         "-f", "ogg",
@@ -120,22 +138,7 @@ get %r{/track/([0-9]+)} do |id|
                                                         "-acodec", "libvorbis",
                                                         "-aq", "5",
                                                         "-")
-        stream do |out|
-            begin
-                loop do
-                    IO.select([stdout]) 
-                    data = stdout.read_nonblock(8192) 
-                    out << data
-                end
-            rescue Errno::EAGAIN
-                retry
-            rescue EOFError
-                puts "End of file #{path}"
-                stdin.close 
-                stdout.close
-                stderr.close
-            end
-        end
+        serveTranscodedFile(stdin, stdout, stderr)
         return
     else
         if ((params[:supportMP3] != "" && type != "audio/mpeg; charset=binary") &&
@@ -149,22 +152,7 @@ get %r{/track/([0-9]+)} do |id|
                                                             "-y",
                                                             "-ab", "160k",
                                                             "-")
-            stream do |out|
-                begin
-                    loop do
-                        IO.select([stdout])
-                        data = stdout.readpartial(8192) 
-                        out << data
-                    end
-                rescue Errno::EAGAIN
-                    retry
-                rescue EOFError
-                    puts "End of file #{path}"
-                    stdin.close 
-                    stdout.close
-                    stderr.close
-                end
-            end
+            serveTranscodedFile(stdin, stdout, stderr)
             return
         end
     end
@@ -172,4 +160,21 @@ get %r{/track/([0-9]+)} do |id|
     content_type type
     puts "send file without transcoding"
     send_file path, :type => type, :last_modified => DateTime.now.httpdate
+end
+
+def serveTranscodedFile(stdin, stdout, stderr)
+    stream do |out|
+        begin
+            loop do
+                IO.select([stdout]) 
+                out <<  stdout.read_nonblock(8192)
+            end
+        rescue Errno::EAGAIN
+            retry
+        rescue EOFError            
+            stdin.close 
+            stdout.close
+            stderr.close
+        end
+    end
 end

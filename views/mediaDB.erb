@@ -1,6 +1,6 @@
 <select id="mediaDB" name="mediaDB" multiple>
     <% mediaDB.each do |artist, albums| %>
-        <optgroup label="<%= artist %>">
+        <optgroup label="<%= artist %>" data-searchlabel="<%= artist.downcase %>">
             <% albums.each do |album| %>
                 <option><%= album %></option>
             <% end %>

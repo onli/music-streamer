@@ -16,7 +16,7 @@
                 <div id="mediaDBControls">
                     <a href="/setDB"><button id="setDB"><img src="/folder.png" alt="media dir" title="set media directory" width="10"/></button></a>
                     <progress id="indexProgress" value="0"></progress>
-                    <button id="updateDB"><img src="/refresh.png" width="10"/></button>
+                    <button id="updateDB" title="update media database"><img src="/refresh.png" width="10"/></button>
                 </div>
                 <%= erb :mediaDB, :locals => {:mediaDB => mediaDB} %> 
             </section>
