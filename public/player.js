@@ -144,6 +144,7 @@ function addPlayerFunctions() {
 
             if (index < (songs.length -1)) {
                 snack.wrap(player).attach("play", function() {
+                    showLyrics(songs[index].title, artist);
                     if (! newPlayer) {
                         newPlayer = createPlayer(index + 1, songs, false);
                         newPlayer.pause;
@@ -204,6 +205,26 @@ function addPlayerFunctions() {
             } else {
                 document.querySelector(container).appendChild(newElement);
             }
+        }
+
+        function showLyrics(track, artist) {
+            alert("show lyrics");
+            var options = {
+                method: 'get',
+                url: '/lyrics',
+                data: {
+                    track: track,
+                    artist: artist
+                }
+            }
+
+            snack.request(options, function(err, res) {
+                alert(res);
+                var lyrics = document.createElement("aside");
+                lyrics.innerHTML = res;
+                lyrics.id = "lyrics";
+                insertOrReplace("#lyrics", lyrics, '#currentMedia');
+            });
         }
     });
 }

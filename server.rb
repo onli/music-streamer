@@ -3,6 +3,10 @@ require 'sinatra/browserid'
 require 'json'
 require 'filemagic'
 require 'open3'
+require 'net/http'
+require 'uri'
+require 'nokogiri'
+require 'open-uri'
 
 require './database.rb'
 
@@ -107,6 +111,48 @@ get '/getTracks' do
     JSON(tracks)
 end
 
+get '/lyrics' do
+    track = params[:track].gsub(" ", "_")
+    artist = params[:artist].gsub(" ", "_") if params[:artist]
+    puts track
+    puts artist
+    
+    # first, try to get the exact song (https://github.com/cschep/bkkweb/blob/master/lyrics.rb)
+    if artist
+        uri = URI.parse("http://lyrics.wikia.com/api.php?func=getSong&artist=#{escape(artist)}&song=#{escape(track)}&fmt=xml")
+        http = Net::HTTP.new(uri.host, uri.port)
+        http_request = Net::HTTP::Get.new(uri.request_uri)
+        response = http.request(http_request).body
+        lyrics = Nokogiri::XML(response).xpath("/LyricsResult/lyrics").text
+        url = Nokogiri::XML(response).xpath("/LyricsResult/url").text
+        if ! lyrics.empty?
+            songpage = unescape(url)
+        end
+    end
+
+    if ! songpage
+        # searching for lyrics (http://stackoverflow.com/questions/1843497/ruby-script-to-grab-lyrics)
+        uri = URI.parse("http://lyrics.wikia.com/index.php?action=ajax&rs=getLinkSuggest&format=json&query=#{escape(track)}")
+        http = Net::HTTP.new(uri.host, uri.port)
+        http_request = Net::HTTP::Get.new(uri.request_uri)
+        json = JSON.parse(http.request(http_request).body)
+        songpage = "http://lyrics.wikia.com/wiki/" + unescape(json["suggestions"].first) if ! json["suggestions"].empty?
+    end
+
+    if songpage
+        begin
+            lyrics_html = Nokogiri::HTML(open(songpage))
+        rescue OpenURI::HTTPError => e
+            puts "Error fetching lyrics from #{songpage}: #{e}"
+            return "No Lyrics found"
+        end
+        lyricbox_div = lyrics_html.css('div.lyricbox')
+        lyricbox_div.css(".rtMatcher").remove
+        return lyricbox_div.inner_html
+    end
+    return "No Lyrics found"
+end
+
 get %r{/track/([0-9]+)} do |id|
     path = Database.new.getPath(id)
     type = FileMagic.new(FileMagic::MAGIC_MIME).file(path)
@@ -121,12 +167,10 @@ get %r{/track/([0-9]+)} do |id|
         params[:supportOGG] != "" &&
         (!(type == "audio/mpeg; charset=binary" && params[:supportMP3] != "")))
         
-        puts "converting to ogg"
         content_type  "application/ogg; charset=binary"
 
         if request.env["HTTP_RANGE"]
             requestStart = request.env["HTTP_RANGE"].gsub(/bytes=([0-9]*)-/) { $1 }
-            puts "start: #{requestStart}"
         end
 
         size = File.size(path).to_s
@@ -143,7 +187,7 @@ get %r{/track/([0-9]+)} do |id|
     else
         if ((params[:supportMP3] != "" && type != "audio/mpeg; charset=binary") &&
             (!(params[:supportOGG] != "" && type == "application/ogg; charset=binary")))
-            puts "converting to mp3"
+
             content_type  "application/ogg; charset=binary"
             headers "Content-Length" => File.size(path).to_s, "Last_Modified" => DateTime.now.httpdate
             stdin, stdout, stderr  = Open3.popen3("ffmpeg", "-loglevel", "quiet",
@@ -167,7 +211,7 @@ def serveTranscodedFile(stdin, stdout, stderr)
         begin
             loop do
                 IO.select([stdout]) 
-                out <<  stdout.read_nonblock(8192)
+                out << stdout.read_nonblock(8192)
             end
         rescue Errno::EAGAIN
             retry
