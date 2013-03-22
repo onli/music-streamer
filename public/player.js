@@ -27,6 +27,10 @@ function addPlayerFunctions() {
                 showPlaylist(songs);
                 var current = 0;
 
+                if (document.querySelector("#player")) {
+                    abortLoad(document.querySelector("#player"));
+                }
+
                 insertOrReplace('#player', createPlayer(0, songs, true), '#currentMedia');
                 
             });
@@ -94,6 +98,10 @@ function addPlayerFunctions() {
             player.pause();
             player.src = "";
             player.load();
+            if (player.newPlayer) {
+                player.src = "";
+                player.load();
+            }
         }
 
         function createImageButton(id, img) {
@@ -125,13 +133,13 @@ function addPlayerFunctions() {
             if (active) {
                 setPlaylistTo(index);
             }
-            var newPlayer = "";
+            player.newPlayer = "";
             snack.wrap(player).attach("ended", function() {
-                transferPlayerState(newPlayer, player, active);
-                newPlayer.play();
+                transferPlayerState(player.newPlayer, player, active);
+                player.newPlayer.play();
                 removeOldControls();
                 setPlaylistTo(index+1);
-                insertOrReplace('#player', newPlayer);
+                insertOrReplace('#player', player.newPlayer);
             });
 
             if (localStorage.volume) {
@@ -145,11 +153,15 @@ function addPlayerFunctions() {
             if (index < (songs.length -1)) {
                 snack.wrap(player).attach("play", function() {
                     showLyrics(songs[index].title, artist);
-                    if (! newPlayer) {
-                        newPlayer = createPlayer(index + 1, songs, false);
-                        newPlayer.pause;
+                    if (! player.newPlayer) {
+                        player.newPlayer = createPlayer(index + 1, songs, false);
+                        player.newPlayer.pause;
                     }
-                })
+                });
+            } else {
+                snack.wrap(player).attach("play", function() {
+                    showLyrics(songs[index].title, artist);
+                });
             }
             
             transferPlayerState(player, oldPlayer, active);

@@ -36,7 +36,8 @@ button:disabled {
 }
 
 #currentMedia {
-    margin-left: 1em;
+    margin-left: 5em;
+    margin-right: 5em;
     display: inline-block;
     vertical-align: top;
 }
@@ -169,7 +170,7 @@ progress:indeterminate::-webkit-progress-bar  {
     transition: all 300ms ease;
     overflow: auto;
     max-height: 350px;
-    font-size: 0.8em;
+    font-size: 0.9em;
     opacity: 0.8;
     border-radius: 5px;
 }
