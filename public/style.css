@@ -65,6 +65,7 @@ button:disabled {
     transition: all 300ms ease;
     background-color: rgba(0,0,0,0.4);
     color: white;
+    border-radius: 5px;
 }
 
 #mediaDBList {
@@ -156,4 +157,39 @@ progress:indeterminate::-webkit-progress-bar  {
     top: 20px;
     right: 40px;
     border-radius: 5px;
+}
+
+#lyrics {
+    background-color: rgba(0,0,0,0.4);
+    height: auto;
+    margin-top: 1em;
+    margin-left: 2em;
+    padding: 0.3em;
+    -webkit-transition: all 300ms ease;
+    transition: all 300ms ease;
+    overflow: auto;
+    max-height: 350px;
+    font-size: 0.8em;
+    opacity: 0.8;
+    border-radius: 5px;
+}
+
+#mediaDB::-webkit-scrollbar,
+#lyrics::-webkit-scrollbar {
+    height: 12px;
+	width: 12px;
+	background-color: rgba(0,0,0,0.4);
+}
+
+
+#mediaDB::-webkit-scrollbar-thumb,
+#lyrics::-webkit-scrollbar-thumb {
+    background-color: rgba(255,255,255,0.2);
+    -webkit-border-radius: 3px;
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+#mediaDB::-webkit-scrollbar-corner,
+#lyrics::-webkit-scrollbar-corner {
+    background-color: rgba(0,0,0,0.4);
 }

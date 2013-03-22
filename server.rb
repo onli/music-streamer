@@ -112,6 +112,7 @@ get '/getTracks' do
 end
 
 get '/lyrics' do
+    puts "get lyrics"
     track = params[:track].gsub(" ", "_")
     artist = params[:artist].gsub(" ", "_") if params[:artist]
     puts track
@@ -126,7 +127,7 @@ get '/lyrics' do
         lyrics = Nokogiri::XML(response).xpath("/LyricsResult/lyrics").text
         url = Nokogiri::XML(response).xpath("/LyricsResult/url").text
         if ! lyrics.empty?
-            songpage = unescape(url)
+            songpage = url.gsub("%2F", "/")   # wikia won't find the page if / is encoded, but won't find pages with umlauts if they are encoded
         end
     end
 
@@ -148,6 +149,7 @@ get '/lyrics' do
         end
         lyricbox_div = lyrics_html.css('div.lyricbox')
         lyricbox_div.css(".rtMatcher").remove
+        puts "send lyrics"
         return lyricbox_div.inner_html
     end
     return "No Lyrics found"

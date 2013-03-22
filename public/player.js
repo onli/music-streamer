@@ -116,7 +116,7 @@ function addPlayerFunctions() {
             var player = document.createElement("audio");
             player.id = "player";
             player.setAttribute("controls", true);
-            player.setAttribute("preload", true);
+            player.setAttribute("preload", "auto");
             var source = document.createElement("source");
             source.src = "/track/" + songs[index].id +"?supportMP3="+ player.canPlayType("audio/mpeg") + "&supportOGG="+ player.canPlayType("audio/ogg") ;
             
@@ -207,8 +207,15 @@ function addPlayerFunctions() {
             }
         }
 
+        function placeLyrics(text) {
+            var lyrics = document.createElement("aside");
+            lyrics.innerHTML = text;
+            lyrics.id = "lyrics";
+            insertOrReplace("#lyrics", lyrics, '#media');
+        }
+
         function showLyrics(track, artist) {
-            alert("show lyrics");
+            placeLyrics("Fetching Lyrics...");
             var options = {
                 method: 'get',
                 url: '/lyrics',
@@ -219,11 +226,9 @@ function addPlayerFunctions() {
             }
 
             snack.request(options, function(err, res) {
-                alert(res);
-                var lyrics = document.createElement("aside");
-                lyrics.innerHTML = res;
-                lyrics.id = "lyrics";
-                insertOrReplace("#lyrics", lyrics, '#currentMedia');
+                console.log("lyrics fetched");
+                placeLyrics(res);
+
             });
         }
     });
