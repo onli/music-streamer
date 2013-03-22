@@ -98,7 +98,7 @@ function addPlayerFunctions() {
             player.pause();
             player.src = "";
             player.load();
-            if (player.newPlayer) {
+            if (player.newPlayer) {     // TODO: Only do this if not selecting newPlayer as player
                 player.src = "";
                 player.load();
             }
@@ -135,6 +135,20 @@ function addPlayerFunctions() {
             }
             player.newPlayer = "";
             snack.wrap(player).attach("ended", function() {
+                //var db = null;
+                //var req = indexedDB.open("songCache", 1);
+                //req.onsuccess = function (evt) {
+                    //var transaction = this.result.transaction(["songs"], "readwrite");
+                    //var objectStore = transaction.objectStore("songs");
+                    //objectStore.add(customerData[i]);
+                    //objectStore.add( {track: songs[index].id, buffer: player.buffer});
+                    //console.log("open Db DONE");
+                //};
+                //req.onupgradeneeded = function(event) {
+                    //var objectStore = db.createObjectStore("songs", { keyPath: "id" });
+                    //objectStore.createIndex("id", "id", { unique: true });
+                //};
+                
                 transferPlayerState(player.newPlayer, player, active);
                 player.newPlayer.play();
                 removeOldControls();

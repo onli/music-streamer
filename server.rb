@@ -205,6 +205,7 @@ get %r{/track/([0-9]+)} do |id|
 
     content_type type
     puts "send file without transcoding"
+    response['Cache-Control'] = "public, max-age=31536000"   # NOTE: chrome doesn't cache the audio regardless
     send_file path, :type => type, :last_modified => DateTime.now.httpdate
 end
 
