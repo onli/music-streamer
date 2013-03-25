@@ -6,6 +6,7 @@ snack.ready(function() {
 function addPlayerFunctions() {
     snack.wrap("#mediaDB").attach("change", function(event) {
         var album = event.target.value;
+        var current = 0;
         if (album != "") {
             var artist = event.target.options[event.target.selectedIndex].parentNode.label;
             var options = {
@@ -25,7 +26,7 @@ function addPlayerFunctions() {
                 }
                 songs = snack.parseJSON(res);
                 showPlaylist(songs);
-                var current = 0;
+                current = 0;
 
                 if (document.querySelector("#player")) {
                     abortLoad(document.querySelector("#player"));
@@ -48,7 +49,7 @@ function addPlayerFunctions() {
                 songName.className = "songName";
                 snack.wrap(songName).attach("click", function() {
                     removeOldControls();
-                    abortLoad(document.querySelector('#player'));
+                    abortLoad(document.querySelector('#player'), index != (current + 1));
                     var player = createPlayer(index, songs, true);
                     insertOrReplace('#player', player, '#currentMedia');
                     player.play();
@@ -72,10 +73,10 @@ function addPlayerFunctions() {
                     // simply ceating a new player leads to a buggy deactivated player
                     var event = document.createEvent("HTMLEvents");
                     event.initEvent("ended", true, true);
-                    abortLoad(player);
+                    abortLoad(player, false);
                     player.dispatchEvent(event);
                 } else {
-                    abortLoad(player);
+                    abortLoad(player, false);
                     insertOrReplace('#player', createPlayer(index + 1, songs, true), '#currentMedia');
                 }
             });
@@ -88,17 +89,17 @@ function addPlayerFunctions() {
 
             snack.wrap(prev).attach("click", function() {
                 removeOldControls();
-                abortLoad(player);
+                abortLoad(player, true);
                 insertOrReplace('#player', createPlayer(index - 1, songs, true), '#curentMedia');
             });
         }
 
         // Abort the network-connection to the server.
-        function abortLoad(player) {
+        function abortLoad(player, both) {
             player.pause();
             player.src = "";
             player.load();
-            if (player.newPlayer) {     // TODO: Only do this if not selecting newPlayer as player
+            if (player.newPlayer && both) {
                 player.src = "";
                 player.load();
             }
@@ -135,20 +136,6 @@ function addPlayerFunctions() {
             }
             player.newPlayer = "";
             snack.wrap(player).attach("ended", function() {
-                //var db = null;
-                //var req = indexedDB.open("songCache", 1);
-                //req.onsuccess = function (evt) {
-                    //var transaction = this.result.transaction(["songs"], "readwrite");
-                    //var objectStore = transaction.objectStore("songs");
-                    //objectStore.add(customerData[i]);
-                    //objectStore.add( {track: songs[index].id, buffer: player.buffer});
-                    //console.log("open Db DONE");
-                //};
-                //req.onupgradeneeded = function(event) {
-                    //var objectStore = db.createObjectStore("songs", { keyPath: "id" });
-                    //objectStore.createIndex("id", "id", { unique: true });
-                //};
-                
                 transferPlayerState(player.newPlayer, player, active);
                 player.newPlayer.play();
                 removeOldControls();
@@ -166,7 +153,7 @@ function addPlayerFunctions() {
 
             if (index < (songs.length -1)) {
                 snack.wrap(player).attach("play", function() {
-                    showLyrics(songs[index].title, artist);
+                    showLyrics(songs[index], artist);
                     if (! player.newPlayer) {
                         player.newPlayer = createPlayer(index + 1, songs, false);
                         player.newPlayer.pause;
@@ -191,6 +178,7 @@ function addPlayerFunctions() {
             if (index > 0) {
                 showPrevButton(index);
             }
+            current = index;
             if (index < songs.length - 1) {
                 showNextButton(index);
             }
@@ -240,22 +228,30 @@ function addPlayerFunctions() {
             insertOrReplace("#lyrics", lyrics, '#media');
         }
 
-        function showLyrics(track, artist) {
+        function showLyrics(song, artist) {
             placeLyrics("Fetching Lyrics...");
-            var options = {
-                method: 'get',
-                url: '/lyrics',
-                data: {
-                    track: track,
-                    artist: artist
+            getCached(song.id + "-lyrics", function(res) {
+                if (res == undefined) {
+                    var options = {
+                        method: 'get',
+                        url: '/lyrics',
+                        data: {
+                            track: song.title,
+                            artist: artist
+                        }
+                    }
+
+                    snack.request(options, function(err, res) {
+                        console.log("lyrics fetched");
+                        cache(song.id + "-lyrics", res);
+                        placeLyrics(res);
+
+                    });
+                } else {
+                    placeLyrics(res);
                 }
-            }
-
-            snack.request(options, function(err, res) {
-                console.log("lyrics fetched");
-                placeLyrics(res);
-
             });
+           
         }
     });
 }
