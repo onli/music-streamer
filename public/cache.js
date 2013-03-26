@@ -5,8 +5,7 @@ var db = null;
 function cache(id, data) {
     var request = indexedDB.open("cache", 1);
     request.onupgradeneeded = function (event) {
-        var db = event.target.result;
-        db.createObjectStore("cache");
+        event.target.result.createObjectStore("cache");
     };
     request.onsuccess = function(event) {
         var db = event.target.result;
@@ -17,6 +16,9 @@ function cache(id, data) {
 
 function getCached(id, success) {
     var request = indexedDB.open("cache", 1);
+    request.onupgradeneeded = function (event) {
+        event.target.result.createObjectStore("cache");
+    };
     request.onsuccess = function(event) {
         var db = event.target.result;
         var transaction = db.transaction(["cache"], 'readwrite');
