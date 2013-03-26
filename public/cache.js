@@ -1,6 +1,4 @@
 var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-var db = null;
-
 
 function cache(id, data) {
     var request = indexedDB.open("cache", 1);
@@ -8,9 +6,7 @@ function cache(id, data) {
         event.target.result.createObjectStore("cache");
     };
     request.onsuccess = function(event) {
-        var db = event.target.result;
-        var transaction = db.transaction(["cache"], 'readwrite');
-        transaction.objectStore("cache").put(data, id);
+        event.target.result.transaction(["cache"], 'readwrite').objectStore("cache").put(data, id);
     };
 }
 
@@ -20,9 +16,7 @@ function getCached(id, success) {
         event.target.result.createObjectStore("cache");
     };
     request.onsuccess = function(event) {
-        var db = event.target.result;
-        var transaction = db.transaction(["cache"], 'readwrite');
-        transaction.objectStore("cache").get(id).onsuccess = function (event) {
+        event.target.result.transaction(["cache"], 'readwrite').objectStore("cache").get(id).onsuccess = function (event) {
             success(event.target.result);
         };
     };
