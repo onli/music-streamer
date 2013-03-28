@@ -17,3 +17,5 @@ Requires:
   * ruby-filemagic
   * puma (or another rack-compatible server with streaming support)
   * taglib-ruby
+  * sanitize
+  * nokogiri

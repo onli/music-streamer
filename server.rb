@@ -7,6 +7,7 @@ require 'net/http'
 require 'uri'
 require 'nokogiri'
 require 'open-uri'
+require 'sanitize'
 
 require './database.rb'
 
@@ -150,7 +151,7 @@ get '/lyrics' do
         lyricbox_div = lyrics_html.css('div.lyricbox')
         lyricbox_div.css(".rtMatcher").remove
         puts "send lyrics"
-        return lyricbox_div.inner_html
+        return Sanitize.clean(lyricbox_div.inner_html.gsub('<br>', "\n"))
     end
     return "No Lyrics found"
 end

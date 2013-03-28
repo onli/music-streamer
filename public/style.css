@@ -173,6 +173,7 @@ progress:indeterminate::-webkit-progress-bar  {
     font-size: 0.9em;
     opacity: 0.8;
     border-radius: 5px;
+    white-space: pre;
 }
 
 #mediaDB::-webkit-scrollbar,
