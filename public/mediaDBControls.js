@@ -146,10 +146,12 @@ snack.ready(function() {
 
     snack.wrap("body").attach("keydown", function(evt) {
         if (evt.keyIdentifier == "U+0008") {
-            searchTerm = searchTerm.slice(0,-1);
-            search();
-            showSearch();
-            resetSearchTimeout();
+            if (searchTerm.length > 0) {
+                searchTerm = searchTerm.slice(0,-1);
+                search();
+                showSearch();
+                resetSearchTimeout();
+            }
         }
     });
 
