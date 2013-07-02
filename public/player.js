@@ -117,7 +117,6 @@ function addPlayerFunctions() {
         var source = document.createElement("source");
 
         player.addEventListener('ended', function() {
-            console.log("ended event");
             removeOldControls();
             var newPlayer = createPlayer(index+1, songs);
             newPlayer.play();
@@ -137,7 +136,6 @@ function addPlayerFunctions() {
         });
 
         player.addEventListener("play", function() {
-            console.log("starting to play song");
             showLyrics(songs[index].title, artist);
         });
         
@@ -223,5 +221,22 @@ function addPlayerFunctions() {
             }
         });
     }
+
+    var hanging = false;
+    var keepAlive = setInterval(function() {
+        // occasionally, the end event is not triggered. Detect this and start the next track
+        var player = document.querySelector('#player');
+        if (player != null && player.ended) {
+            if (hanging) {
+                hanging = false;
+                var event = document.createEvent("HTMLEvents");
+                event.initEvent("ended", true, true);
+                player.dispatchEvent(event);
+            } else {
+                hanging = true;
+            }
+        }
+       
+    }, 200);
 }
 
