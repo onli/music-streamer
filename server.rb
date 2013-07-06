@@ -30,9 +30,24 @@ helpers do
         end
         return false
     end
+
+    def isGuest?
+        if authorized?
+            if Database.new.getOption('guest').split(";").include? authorized_email
+                return true
+            end
+        end
+        return false
+    end
     
     def protected!
         unless isAdmin?
+            throw(:halt, [401, "Not authorized\n"])
+        end
+    end
+
+    def semiProtected!
+        unless isAdmin? || isGuest?
             throw(:halt, [401, "Not authorized\n"])
         end
     end
@@ -47,7 +62,7 @@ helpers do
 end
 
 get '/' do
-    if ! isAdmin?
+    if ! (isAdmin? || isGuest?)
         erb :login
     else
         db = Database.new
@@ -64,6 +79,14 @@ get '/setDB' do
     erb :setDB, :locals => {:mediaDir => Database.new.getOption("mediaDir")}
 end
 
+get '/settings' do
+    protected!
+    session[:origin] = back
+    guests = Database.new.getOption("guest")
+    guests = guests.split(";") if guests != nil
+    erb :settings, :locals => {:guests => guests}
+end
+
 post '/addAdmin' do
     db = Database.new
     if db.firstUse? && ! authorized_email.empty?
@@ -74,14 +97,35 @@ post '/addAdmin' do
     end
 end
 
+get '/logout' do
+    logout!
+    return "Logged out"
+end
+
 post '/setOption' do
     protected!
-    Database.new.setOption(params[:name], params[:value])
+    if params[:name].is_a?(String)
+        Database.new.setOption(params[:name], params[:value])
+    else
+        # we came from the settings, so input is more complex
+        params[:name].each do |name, values|
+            valueString = ""
+            values.each do |key, value|
+                valueString+=value + ";"
+            end
+            Database.new.setOption(name, valueString.chomp(";"))
+        end
+    end
     origin = session[:origin]
     # when setOption wasn't called first, like with the design, origin is old, so unset it
     session.delete(:origin)
     redirect origin if origin != nil
     redirect back
+end
+
+get '/guestInput' do
+    protected!
+    erb :guestInput, :locals => {:index => params[:index], :mail => ""}
 end
 
 post '/updateDB' do
@@ -103,22 +147,21 @@ get '/updateDone' do
 end
 
 get '/mediaDB' do
-    !protected!
+    semiProtected!
     erb :mediaDB, :locals => {:mediaDB => Database.new.getMediaDB}
 end
 
 get '/tracks' do
-    protected!
+    semiProtected!
     tracks = Database.new.getTracks(params[:artist], params[:album]).delete_if{|key, value| key.is_a? Integer}
     JSON(tracks)
 end
 
 get '/lyrics' do
-    puts "get lyrics"
+    semiProtected!
     track = params[:track].gsub(" ", "_")
     artist = params[:artist].gsub(" ", "_") if params[:artist]
-    puts track
-    puts artist
+
     
     # first, try to get the exact song (https://github.com/cschep/bkkweb/blob/master/lyrics.rb)
     if artist
@@ -158,7 +201,7 @@ get '/lyrics' do
 end
 
 get '/download' do
-    protected!
+    semiProtected!
     tracks = Database.new.getTracks(params[:artist], params[:album]).delete_if{|key, value| key.is_a? Integer}
     filename = (params[:artist] + "_" + params[:album] + ".zip").gsub("/", "_")
     t = Tempfile.new(['temp_zip', '.zip'])
@@ -180,7 +223,7 @@ end
 
 # returns a cover, expects a id of one of the songs of the current album
 get '/cover' do
-    protected!
+    semiProtected!
     path = Database.new.getPath(params[:id])
     path = File.dirname(path)
     images = Dir[path + "/*.jpg"]
@@ -198,6 +241,7 @@ get '/cover' do
 end
 
 get %r{/track/([0-9]+)} do |id|
+    semiProtected!
     path = Database.new.getPath(id)
     type = FileMagic.new(FileMagic::MAGIC_MIME).file(path)
     
@@ -246,7 +290,6 @@ get %r{/track/([0-9]+)} do |id|
     end
 
     content_type type
-    puts "send file without transcoding"
     response['Cache-Control'] = "public, max-age=31536000"   # NOTE: chrome doesn't cache the audio regardless
     send_file path, :type => type, :last_modified => DateTime.now.httpdate
 end

@@ -208,6 +208,16 @@ progress:indeterminate::-webkit-progress-bar  {
     z-index: -1;
 }
 
+#submit {
+    display: block;
+}
+
+#settingsLink {
+    display: absolute;
+    float: right;
+    margin-right: 1em;
+}
+
 @font-face {
     font-family: 'fontello';
     src: url('../font/fontello.eot?26414672');
@@ -249,8 +259,16 @@ progress:indeterminate::-webkit-progress-bar  {
     opacity: .6;
 }
  
+
+.icon-plus:before { content: '\e807'; } /* '' */
+.icon-undo:before { content: '\e809'; } /* '' */
+.icon-cog:before { content: '\e806'; } /* '' */
+.icon-ok:before { content: '\e808'; } /* '' */
+.icon-fast-forward:before { content: '\e803'; } /* '' */
+.icon-fast-backward:before { content: '\e804'; } /* '' */
+.icon-trash:before { content: '\e805'; } /* '' */
 .icon-folder-empty:before { content: '\e802'; } /* '' */
 .icon-download:before { content: '\e800'; } /* '' */
 .icon-loop:before { content: '\e801'; } /* '' */
-.icon-fast-forward:before { content: '\e803'; } /* '' */
-.icon-fast-backward:before { content: '\e804'; } /* '' */
+
+

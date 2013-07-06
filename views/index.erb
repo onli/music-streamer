@@ -8,6 +8,9 @@
         <link rel="stylesheet" href="/style.css">
     </head>
     <body>
+        <% if isAdmin? %>
+            <a href="/settings" id="settingsLink"><button class="icon-cog" title="settings"></button></a>
+        <% end %>
         <section id="media">
             <section id="mediaDBList">
                 <div id="mediaDBControls">

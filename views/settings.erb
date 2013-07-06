@@ -1,0 +1,25 @@
+<%# -*- encoding : utf-8 -*- %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Settings - streamer</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="/style.css">
+    </head>
+    <body>
+        <a href="/"><button class="icon-undo">Back</button></a>
+        <form method="POST" action="/setOption">
+            <h3>Guest Accounts</h3>
+            <ol id="guestList">
+                <% if guests %>
+                    <% guests.each_with_index do |guest, index| %>
+                        <%= erb :guestInput, :locals => {:index => index, :mail => guest} %>
+                    <% end %>
+                <% end %>
+            </ol>
+            <button class="icon-ok" type="submit" id="submit">OK</button>
+        </form>
+        <script src="/settings.js"></script>
+    </body>
+</html>

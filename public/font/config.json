@@ -4,15 +4,45 @@
   "css_use_suffix": false,
   "glyphs": [
     {
+      "uid": "b90d80c250a9bbdd6cd3fe00e6351710",
+      "css": "ok",
+      "code": 59400,
+      "src": "iconic"
+    },
+    {
+      "uid": "dbd39eb5a1d67beb54cfcb535e840e0f",
+      "css": "plus",
+      "code": 59399,
+      "src": "iconic"
+    },
+    {
       "uid": "815576dccc008afcfd83a38378a4fdde",
       "css": "download",
       "code": 59392,
       "src": "iconic"
     },
     {
+      "uid": "ce5e29aa5208417700e7f7012a236c00",
+      "css": "undo",
+      "code": 59401,
+      "src": "iconic"
+    },
+    {
+      "uid": "d41b15fca9100375790a920f2deda3ff",
+      "css": "trash",
+      "code": 59397,
+      "src": "iconic"
+    },
+    {
       "uid": "13ea1e82d38c7ed614d9ee85e9c42053",
       "css": "folder-empty",
       "code": 59394,
+      "src": "iconic"
+    },
+    {
+      "uid": "fc94b92194752796654c96c7b7dccebb",
+      "css": "cog",
+      "code": 59398,
       "src": "iconic"
     },
     {

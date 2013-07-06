@@ -100,7 +100,7 @@ function addPlayerFunctions() {
     }
 
     function showNextButton(index) {
-        var next = createImageButton("next", "/next.png");
+        var next = createImageButton("next");
 
         document.querySelector("#song"+index).appendChild(next);
         
@@ -121,7 +121,7 @@ function addPlayerFunctions() {
     }
 
     function showPrevButton(index) {
-        var prev = createImageButton("prev", "/prev.png");
+        var prev = createImageButton("prev");
 
         document.querySelector("#song"+index).appendChild(prev);
 
@@ -142,11 +142,13 @@ function addPlayerFunctions() {
     function createImageButton(id, img) {
         var button = document.createElement("button");
         button.id = id;
-        var buttonImage = document.createElement("img");
-        buttonImage.setAttribute("src", img);
-        buttonImage.setAttribute("width", "16");
-        buttonImage.setAttribute("height", "16");
-        button.appendChild(buttonImage);
+        if (id == "next") {
+            button.className = "icon-fast-forward";
+            button.title = "next";
+        } else {
+            button.className = "icon-fast-backward";
+            button.title = "previous";
+        }
         return button;
     }
 
