@@ -205,6 +205,7 @@ progress:indeterminate::-webkit-progress-bar  {
     max-width: 400px;
     max-height: 400px;
     height: auto;
+    z-index: -1;
 }
 
 @font-face {
