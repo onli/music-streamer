@@ -277,7 +277,7 @@ progress:indeterminate::-webkit-progress-bar  {
 .icon-fast-forward:before { content: '\e803'; } /* '' */
 .icon-fast-backward:before { content: '\e804'; } /* '' */
 .icon-trash:before { content: '\e805'; } /* '' */
-.icon-folder-empty:before { content: '\e802'; } /* '' */
+.icon-folder:before { content: '\e802'; } /* '' */
 .icon-download:before { content: '\e800'; } /* '' */
 .icon-loop:before { content: '\e801'; } /* '' */
 
