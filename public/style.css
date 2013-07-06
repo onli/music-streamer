@@ -86,6 +86,16 @@ button:disabled {
     opacity: 0.8;
 }
 
+
+#playlist {
+    background-color: rgba(0,0,0,0.4);
+    border-radius: 5px;
+    padding-top: 1em;
+    padding-right: 1em;
+    padding-bottom: 1em;
+    margin-bottom: 0.1em;
+}
+
 .songName + button {
     margin-left: 0.5em;
 }
