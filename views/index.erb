@@ -11,14 +11,14 @@
         <section id="media">
             <section id="mediaDBList">
                 <div id="mediaDBControls">
-                    <a href="/setDB"><button id="setDB"><img src="/folder.png" alt="media dir" title="set media directory" width="10"/></button></a>
+                    <a href="/setDB"><button id="setDB" title="set media directory"><span class="icon-folder-empty" alt="media dir" /></button></a>
                     <progress id="indexProgress" value="0"></progress>
-                    <button id="updateDB" title="update media database"><img src="/refresh.png" width="10"/></button>
+                    <button id="updateDB" title="update media database"><span class="icon-loop" alt="refresh" /></button>
                 </div>
-                <%= erb :mediaDB, :locals => {:mediaDB => mediaDB} %> 
+                <%= erb :mediaDB, :locals => {:mediaDB => mediaDB} %>
             </section>
             <section id="currentMedia">
-
+                
             </section>
         </section>
         <script src="/player.js" defer></script>
