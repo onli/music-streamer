@@ -107,7 +107,7 @@ get '/mediaDB' do
     erb :mediaDB, :locals => {:mediaDB => Database.new.getMediaDB}
 end
 
-get '/getTracks' do
+get '/tracks' do
     protected!
     tracks = Database.new.getTracks(params[:artist], params[:album]).delete_if{|key, value| key.is_a? Integer}
     JSON(tracks)
@@ -168,7 +168,6 @@ get '/download' do
             name += ".mp3" unless name.end_with?(".mp3")
             z.put_next_entry(name)
             z.print(open(Database.new.getPath(track["id"])) {|f| f.read })
-            p track["title"] + ' added to file'
         end
     end
 
@@ -177,6 +176,25 @@ get '/download' do
                       :filename => filename,
                       :stream => false
     
+end
+
+# returns a cover, expects a id of one of the songs of the current album
+get '/cover' do
+    protected!
+    path = Database.new.getPath(params[:id])
+    path = File.dirname(path)
+    images = Dir[path + "/*.jpg"]
+    if (images.size > 1)
+        ["folder.jpg", "front.jpg", "large.jpg"].each do |preferredImage|
+            index = images.index { |i| i.downcase.include? preferredImage}
+            if (index)
+                send_file images[index]
+            end
+        end
+    end
+    if images.size > 0
+        send_file images[0]
+    end
 end
 
 get %r{/track/([0-9]+)} do |id|

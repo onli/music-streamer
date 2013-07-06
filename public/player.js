@@ -20,14 +20,32 @@ function addPlayerFunctions() {
                     }
 
                     insertOrReplace('#player', createPlayer(0, songs), '#currentMedia');
+                    var cover = document.querySelector('#cover');
+                    if (cover != null) {
+                        cover.parentNode.removeChild(cover);
+                    }
+                     // remove cover of the prior album if it exists
+                    showCover(songs[0].id);
                 }
             }
 
-            http.open("GET","/getTracks?artist="+artist +"&album="+album, true);
+            http.open("GET","/tracks?artist="+artist +"&album="+album, true);
             http.send();
             showDownloadButton(artist, album);
         }
     });
+
+    function showCover(songid) {
+        var cover = document.createElement("img");
+        cover.addEventListener("load", function() {
+            var curMedia = document.querySelector("#currentMedia");
+            if (cover.complete) {
+                curMedia.insertBefore(cover, curMedia.firstChild);
+            }
+        });
+        cover.id = "cover";
+        cover.src = "/cover?id="+songid;
+    }
 
     function showDownloadButton(artist, album) {
         var button = document.createElement("button");
@@ -44,14 +62,16 @@ function addPlayerFunctions() {
         
         form.method = "GET";
         form.action = "/download";
+        form.id = "downloadForm";
         
-        button.innerHTML = "Download";
+        button.title = "Download album";
+        button.className = "icon-download";
 
         form.appendChild(button);
         form.appendChild(artistInput);
         form.appendChild(albumInput);
 
-        insertOrReplace('#downloadForm', form);
+        insertOrReplace('#downloadForm', form, "#mediaDBList");
     }
 
     /**
