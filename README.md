@@ -2,7 +2,7 @@ music-streamer
 ==============
 Listen to music from your own server in your browser using HTML 5.
 
-![ScreenShot](https://lh4.googleusercontent.com/-6oLB6J11b1s/UQGjZ14XO3I/AAAAAAAACZE/ygJFqRvdISk/s640/music-streamer-search.jpg))
+![ScreenShot](https://lh4.googleusercontent.com/-6oLB6J11b1s/UQGjZ14XO3I/AAAAAAAACZE/ygJFqRvdISk/s640/music-streamer-search.jpg)
 
 Requires: 
  * General:
