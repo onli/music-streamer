@@ -8,6 +8,7 @@ require 'uri'
 require 'nokogiri'
 require 'open-uri'
 require 'sanitize'
+require 'zip/zip'
 
 require './database.rb'
 
@@ -154,6 +155,28 @@ get '/lyrics' do
         return Sanitize.clean(lyricbox_div.inner_html.gsub('<br>', "\n"))
     end
     return "No Lyrics found"
+end
+
+get '/download' do
+    protected!
+    tracks = Database.new.getTracks(params[:artist], params[:album]).delete_if{|key, value| key.is_a? Integer}
+    filename = (params[:artist] + "_" + params[:album] + ".zip").gsub("/", "_")
+    t = Tempfile.new(['temp_zip', '.zip'])
+    Zip::ZipOutputStream.open(t.path) do |z|
+        tracks.each do |track|
+            name = track["title"]
+            name += ".mp3" unless name.end_with?(".mp3")
+            z.put_next_entry(name)
+            z.print(open(Database.new.getPath(track["id"])) {|f| f.read })
+            p track["title"] + ' added to file'
+        end
+    end
+
+    send_file t.path, :type => 'application/zip',
+                      :disposition => 'attachment',
+                      :filename => filename,
+                      :stream => false
+    
 end
 
 get %r{/track/([0-9]+)} do |id|

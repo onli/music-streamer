@@ -25,8 +25,34 @@ function addPlayerFunctions() {
 
             http.open("GET","/getTracks?artist="+artist +"&album="+album, true);
             http.send();
+            showDownloadButton(artist, album);
         }
     });
+
+    function showDownloadButton(artist, album) {
+        var button = document.createElement("button");
+        var form = document.createElement("form");
+        var artistInput = document.createElement("input");
+        var albumInput = document.createElement("input");
+        artistInput.value = artist;
+        artistInput.name = "artist"
+        artistInput.type = "hidden"
+        
+        albumInput.value = album;
+        albumInput.type = "hidden"
+        albumInput.name = "album";
+        
+        form.method = "GET";
+        form.action = "/download";
+        
+        button.innerHTML = "Download";
+
+        form.appendChild(button);
+        form.appendChild(artistInput);
+        form.appendChild(albumInput);
+
+        insertOrReplace('#downloadForm', form);
+    }
 
     /**
     * songs: [{id => ..., title => ..., track => ... }}
