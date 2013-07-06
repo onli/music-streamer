@@ -6,6 +6,8 @@
 <font id="fontello" horiz-adv-x="1000" >
 <font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
 <missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="fast-forward" unicode="&#xe803;" d="M0 6l0 687 312-312 0 312 312-312 0 344 125 0 0-750-125 0 0 344-312-312 0 312z" horiz-adv-x="750" />
+<glyph glyph-name="fast-backward" unicode="&#xe804;" d="M0-25l0 750 125 0 0-344 312 312 0-312 312 312 0-687-312 312 0-312-312 312 0-344-125 0z" horiz-adv-x="750" />
 <glyph glyph-name="folder-empty" unicode="&#xe802;" d="M464 685l447 0 0-669q0-46-33-79t-79-33l-669 0q-46 0-79 33t-33 79l0 781 446 0 0-112z m-334 0l0-223 669 0 0 112-446 0 0 111-223 0z m669-669l0 335-669 0 0-335 669 0z" horiz-adv-x="928" />
 <glyph glyph-name="download" unicode="&#xe800;" d="M18-97l0 127 670 0 0-127-670 0z m446 383l112 0-223-256-223 256 111 0 0 510 223 0 0-510z" horiz-adv-x="705" />
 <glyph glyph-name="loop" unicode="&#xe801;" d="M575 183l168 223 168-223-112 0 0-57q0-69-49-118t-119-49l-334 0q-70 0-119 49t-49 118l0 57 111 0 0-57q0-22 17-39t41-17l334 0q23 0 40 16t17 40l0 57-113 0z m-221 335l-167-224-169 224 112 0 0 55q0 69 49 119t119 50l334 0q70 0 119-50t49-119l0-55-111 0 0 55q0 24-17 40t-40 16l-334 0q-24 0-41-16t-17-40l0-55 113 0z" horiz-adv-x="928" />

@@ -230,7 +230,7 @@ progress:indeterminate::-webkit-progress-bar  {
     width: 1em;
     margin-right: .2em;
     text-align: center;
-    /* opacity: .8; */
+    opacity: .8;
 
     /* For safety - reset parent styles, that can break glyph codes*/
     font-variant: normal;
@@ -240,7 +240,17 @@ progress:indeterminate::-webkit-progress-bar  {
     /* remove if not needed */
     margin-left: .2em;
 }
+
+[class^="icon-"]:hover:before, [class*=" icon-"]:hover:before {
+    opacity: 1;
+}
+
+[class^="icon-"]:active:before, [class*=" icon-"]:active:before {
+    opacity: .6;
+}
  
 .icon-folder-empty:before { content: '\e802'; } /* '' */
 .icon-download:before { content: '\e800'; } /* '' */
 .icon-loop:before { content: '\e801'; } /* '' */
+.icon-fast-forward:before { content: '\e803'; } /* '' */
+.icon-fast-backward:before { content: '\e804'; } /* '' */
