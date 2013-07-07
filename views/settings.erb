@@ -14,7 +14,9 @@
             <ol id="guestList">
                 <% if guests %>
                     <% guests.each_with_index do |guest, index| %>
-                        <%= erb :guestInput, :locals => {:index => index, :mail => guest} %>
+                        <li class="guestInput">
+                            <%= erb :guestInput, :locals => {:index => index, :mail => guest} %>
+                        </li>
                     <% end %>
                 <% end %>
             </ol>

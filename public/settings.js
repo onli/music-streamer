@@ -7,7 +7,11 @@ add.addEventListener("click", function() {
         
     http.onreadystatechange = function() {
         if (http.readyState == 4 && http.status == 200) {
-            document.querySelector("#guestList").innerHTML += http.responseText;
+            var newGuestInput = document.createElement("li");
+            newGuestInput.className = "guestInput";
+            newGuestInput.innerHTML =  http.responseText;
+            document.querySelector("#guestList").appendChild(newGuestInput);
+            
             addRemoveButton(document.querySelectorAll(".guestInput").length-1);
         }
     }
@@ -25,17 +29,14 @@ for (var i = 0; i < inputs.length; i++) {
     addRemoveButton(i);
 }
 
-function addRemoveButton(i) {
+function addRemoveButton(index) {
     var removeButton = document.createElement("button");
     removeButton.type = "button";
     removeButton.className = "remove icon-trash";
-    removeButton.dataset["index"] = i;
-    document.querySelectorAll(".guestInput")[i].appendChild(removeButton);
+    document.querySelectorAll(".guestInput")[index].appendChild(removeButton);
 
-    removeButtons = document.querySelectorAll(".remove");
-    for (var j = 0; j < removeButtons.length; j++) {
-        removeButtons[j].addEventListener("click", function() {
-            document.querySelectorAll(".guestInput")[this.dataset["index"]].parentNode.removeChild(document.querySelectorAll(".guestInput")[this.dataset["index"]]);
-        });
-    }
+    removeButton.addEventListener("click", function() {
+        this.parentNode.parentNode.removeChild(this.parentNode);
+    });
+
 }   
