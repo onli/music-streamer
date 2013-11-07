@@ -33,8 +33,12 @@ helpers do
 
     def isGuest?
         if authorized?
-            if Database.new.getOption('guest').split(";").include? authorized_email
-                return true
+            begin
+                if Database.new.getOption('guest').split(";").include? authorized_email
+                    return true
+                end
+            rescue => error
+                puts error
             end
         end
         return false
