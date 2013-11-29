@@ -5,6 +5,7 @@ document.querySelector("#updateDB").addEventListener("click", function() {
     document.querySelector('#updateDB').setAttribute("disabled", "");
 
     var http = new XMLHttpRequest();
+    var updateProgressInterval = "";
         
     http.onreadystatechange = function() {
         if (http.readyState == 4 && http.status == 200) {
@@ -12,8 +13,10 @@ document.querySelector("#updateDB").addEventListener("click", function() {
             var httpUpdateDone = new XMLHttpRequest();
             httpUpdateDone.onreadystatechange = function() {
                 if (httpUpdateDone.readyState == 4 && httpUpdateDone.status == 200) {
+                    alert(httpUpdateDone.responseText);
                     if (httpUpdateDone.responseText == "true") {
                         clearInterval(checkUpdateEnd);
+                        clearInterval(updateProgressInterval);
                         
                         var mediaDBHttp = new XMLHttpRequest();
                         mediaDBHttp.onreadystatechange = function() {
@@ -64,7 +67,7 @@ document.querySelector("#updateDB").addEventListener("click", function() {
         if (updateTotalHttp.readyState == 4 && updateTotalHttp.status == 200) {
             document.querySelector("#indexProgress").setAttribute("max", updateTotalHttp.responseText);
             
-            var updateProgressInterval = setInterval(function() {
+            updateProgressInterval = setInterval(function() {
                 var optionsProgressHttp = new XMLHttpRequest();
 
                 optionsProgressHttp.onreadystatechange = function() {
