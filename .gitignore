@@ -1,1 +1,5 @@
 streamer.db
+vendor/
+Gemfile.lock
+feedback.txt
+.bundle/
