@@ -249,16 +249,16 @@ get %r{/track/([0-9]+)} do |id|
     path = Database.new.getPath(id)
     type = FileMagic.new(FileMagic::MAGIC_MIME).file(path)
     
-    if type == "application/octet-stream; charset=binary"
+    if type.include?("application/octet-stream;")
         # application/octetstream is the fallback, so the extension is the last hope
         type = "audio/mpeg; charset=binary" if File.extname(path) == ".mp3"
         type = "application/ogg; charset=binary" if File.extname(path) == ".ogg"
     end
 
-    if (type != "application/ogg; charset=binary" &&
+    if ( ! type.include?("application/ogg;") &&
         params[:supportOGG] != "" &&
-        (!(type == "audio/mpeg; charset=binary" && params[:supportMP3] != "")))
-        
+        (!(type.include?("audio/mpeg;") && params[:supportMP3] != "")))
+
         content_type  "application/ogg; charset=binary"
 
         if request.env["HTTP_RANGE"]
@@ -277,10 +277,10 @@ get %r{/track/([0-9]+)} do |id|
         serveTranscodedFile(stdin, stdout, stderr)
         return
     else
-        if ((params[:supportMP3] != "" && type != "audio/mpeg; charset=binary") &&
-            (!(params[:supportOGG] != "" && type == "application/ogg; charset=binary")))
+        if ((params[:supportMP3] != "" && ! type.include?("audio/mpeg;")) &&
+            (!(params[:supportOGG] != "" && type.include?("application/ogg;"))))
 
-            content_type  "application/ogg; charset=binary"
+            content_type  "audio/mpeg; charset=binary"
             headers "Content-Length" => File.size(path).to_s, "Last_Modified" => DateTime.now.httpdate
             stdin, stdout, stderr  = Open3.popen3("ffmpeg", "-loglevel", "quiet",
                                                             "-i", path,
