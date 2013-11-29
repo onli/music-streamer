@@ -65,7 +65,6 @@ class Database
                             self.addToDB(tag.artist, tag.album, tag.title, tag.track, entry)
                         rescue => error
                         end
-                        fileref.close() # this should not be necessary
                     end
                 }
             end

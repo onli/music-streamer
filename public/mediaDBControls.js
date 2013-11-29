@@ -13,7 +13,6 @@ document.querySelector("#updateDB").addEventListener("click", function() {
             var httpUpdateDone = new XMLHttpRequest();
             httpUpdateDone.onreadystatechange = function() {
                 if (httpUpdateDone.readyState == 4 && httpUpdateDone.status == 200) {
-                    alert(httpUpdateDone.responseText);
                     if (httpUpdateDone.responseText == "true") {
                         clearInterval(checkUpdateEnd);
                         clearInterval(updateProgressInterval);
