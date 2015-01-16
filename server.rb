@@ -5,10 +5,8 @@ require 'filemagic'
 require 'open3'
 require 'net/http'
 require 'uri'
-require 'nokogiri'
 require 'open-uri'
-require 'sanitize'
-require 'zip/zip'
+require 'zip'
 
 require './database.rb'
 
@@ -162,45 +160,6 @@ get '/tracks' do
 end
 
 get '/lyrics' do
-    semiProtected!
-    track = params[:track].gsub(" ", "_")
-    artist = params[:artist].gsub(" ", "_") if params[:artist]
-
-    
-    # first, try to get the exact song (https://github.com/cschep/bkkweb/blob/master/lyrics.rb)
-    if artist
-        uri = URI.parse("http://lyrics.wikia.com/api.php?func=getSong&artist=#{escape(artist)}&song=#{escape(track)}&fmt=xml")
-        http = Net::HTTP.new(uri.host, uri.port)
-        http_request = Net::HTTP::Get.new(uri.request_uri)
-        response = http.request(http_request).body
-        lyrics = Nokogiri::XML(response).xpath("/LyricsResult/lyrics").text
-        url = Nokogiri::XML(response).xpath("/LyricsResult/url").text
-        if ! lyrics.empty?
-            songpage = url.gsub("%2F", "/")   # wikia won't find the page if / is encoded, but won't find pages with umlauts if they are encoded
-        end
-    end
-
-    if ! songpage
-        # searching for lyrics (http://stackoverflow.com/questions/1843497/ruby-script-to-grab-lyrics)
-        uri = URI.parse("http://lyrics.wikia.com/index.php?action=ajax&rs=getLinkSuggest&format=json&query=#{escape(track)}")
-        http = Net::HTTP.new(uri.host, uri.port)
-        http_request = Net::HTTP::Get.new(uri.request_uri)
-        json = JSON.parse(http.request(http_request).body)
-        songpage = "http://lyrics.wikia.com/wiki/" + unescape(json["suggestions"].first) if ! json["suggestions"].empty?
-    end
-
-    if songpage
-        begin
-            lyrics_html = Nokogiri::HTML(open(songpage))
-        rescue OpenURI::HTTPError => e
-            puts "Error fetching lyrics from #{songpage}: #{e}"
-            return "No Lyrics found"
-        end
-        lyricbox_div = lyrics_html.css('div.lyricbox')
-        lyricbox_div.css(".rtMatcher").remove
-        puts "send lyrics"
-        return Sanitize.clean(lyricbox_div.inner_html.gsub('<br>', "\n"))
-    end
     return "No Lyrics found"
 end
 
