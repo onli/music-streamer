@@ -182,6 +182,10 @@ function addPlayerFunctions() {
         player.addEventListener("volumechange", function() {
             localStorage.volume = player.volume;
         });
+
+        player.addEventListener("play", function() {
+            showLyrics(songs[index], artist);
+        });
         
         transferPlayerState(player, oldPlayer);
         source.src = "/track/" + songs[index].id +"?supportMP3="+ player.canPlayType("audio/mpeg") + "&supportOGG="+ player.canPlayType("audio/ogg");
@@ -241,6 +245,29 @@ function addPlayerFunctions() {
         }
     }
 
+    function placeLyrics(text) {
+        var lyrics = document.createElement("aside");
+        lyrics.innerHTML = text;
+        lyrics.id = "lyrics";
+        insertOrReplace("#lyrics", lyrics, '#media');
+    }
+
+    function showLyrics(song, artist) {
+        getCached(song.id + "-lyrics", function(res) {
+            if (res == undefined) {
+                var oReq = new XMLHttpRequest();
+                oReq.addEventListener("loadstart", function() { placeLyrics(song.title + ": Fetching Lyrics..."); }, false);
+                oReq.onreadystatechange = function() {if (this.readyState === 4) {
+                    cache(song.id + "-lyrics", this.response);
+                    placeLyrics(this.response);
+                }};
+                oReq.open("GET", "/lyrics?track="+song.title+ "&artist="+artist, true);
+                oReq.send();
+            } else {
+                placeLyrics(res);
+            }
+        });
+    }
 
     var hanging = false;
     var keepAlive = setInterval(function() {
