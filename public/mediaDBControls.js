@@ -99,12 +99,13 @@ function adjustMediaDBHeight() {
 var searchTerm = "";
 var searchTermReset = null;
 document.querySelector("body").addEventListener("keypress", function(evt) {
-    var charTyped = String.fromCharCode(evt.keyCode)
-    searchTerm += charTyped;
-    resetSearchTimeout();
+    if (evt.key.length == 1) {
+        searchTerm += evt.key;
+        resetSearchTimeout();
 
-    search();
-    showSearch()
+        search();
+        showSearch()
+    }
 });
 
 function resetSearchTimeout() {
@@ -140,7 +141,7 @@ function search() {
 }
 
 document.querySelector("body").addEventListener("keydown", function(evt) {
-    if (evt.keyIdentifier == "U+0008") {
+    if (evt.key == "Backspace") {
         if (searchTerm.length > 0) {
             searchTerm = searchTerm.slice(0,-1);
             search();
