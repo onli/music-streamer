@@ -7,7 +7,7 @@ function addPlayerFunctions() {
     document.querySelector('#mediaDB').addEventListener("change", function(event) {
         var album = event.target.value;
         if (album != "") {
-            var artist = event.target.options[event.target.selectedIndex].parentNode.label;
+            artist = event.target.options[event.target.selectedIndex].parentNode.label;
             var http = new XMLHttpRequest();
             
             http.onreadystatechange = function() {

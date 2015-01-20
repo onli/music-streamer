@@ -174,7 +174,6 @@ function showSearch() {
     searchBox.innerHTML = searchTerm + "_";
 }
 
-
 document.querySelector("#mediaDB").addEventListener("scroll", function() {
     localStorage.scrollPosition = this.scrollTop;
 });
@@ -185,7 +184,6 @@ function restoreScroll() {
 adjustMediaDBHeight();
 restoreScroll();
 
-
 if (document.querySelector('#mediaDB').getAttribute("size") == 0) {
     var event = document.createEvent("HTMLEvents");
     event.initEvent("click", true, true);
@@ -193,4 +191,3 @@ if (document.querySelector('#mediaDB').getAttribute("size") == 0) {
 }
 
 addPlayerFunctions();
-

@@ -161,16 +161,29 @@ get '/tracks' do
 end
 
 get '/lyrics' do
-    apiSearch = XmlSimple.xml_in(HTTP.get("http://api.chartlyrics.com/apiv1.asmx/SearchLyric?artist=#{params[:artist]}%20jackson&song=#{params[:track]}").to_s)
-    lyricId = apiSearch["SearchLyricResult"][0]["LyricId"][0]
-    checksum = apiSearch["SearchLyricResult"][0]["LyricChecksum"][0]
     i=0
-    sleep 5     # the the api enforces timeouts
+    begin
+        apiSearch = XmlSimple.xml_in(HTTP.get(URI.encode("http://api.chartlyrics.com/apiv1.asmx/SearchLyric?artist=#{params[:artist]}&song=#{params[:track]}")).to_s)
+    rescue IOError => ioe
+        sleep 10    # give the api more time
+        i++
+        until i == 2
+            retry
+        end
+    end
+    begin
+        lyricId = apiSearch["SearchLyricResult"][0]["LyricId"][0]
+        checksum = apiSearch["SearchLyricResult"][0]["LyricChecksum"][0]
+    rescue NoMethodError => nme
+        return "no lyrics found"
+    end
+    i=0
+    sleep 5     # the api enforces timeouts
     begin
         lyrics = XmlSimple.xml_in(HTTP.get("http://api.chartlyrics.com/apiv1.asmx/GetLyric?lyricId=#{lyricId}&lyricCheckSum=#{checksum}").to_s)
         return lyrics["Lyric"][0]
     rescue IOError => ioe
-        sleep 15    # give the api more time
+        sleep 15
         i++
         until i == 3
             retry
