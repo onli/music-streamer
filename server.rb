@@ -238,17 +238,19 @@ get %r{/track/([0-9]+)} do |id|
     path = Database.new.getPath(id)
     type = FileMagic.new(FileMagic::MAGIC_MIME).file(path)
     
-    if type.include?("application/octet-stream;")
+    if type.include?("application/octet-stream")
         # application/octetstream is the fallback, so the extension is the last hope
         type = "audio/mpeg; charset=binary" if File.extname(path) == ".mp3"
-        type = "application/ogg; charset=binary" if File.extname(path) == ".ogg"
+        type = "audio/ogg; charset=binary" if File.extname(path) == ".ogg"
     end
+    
+    type = "audio/ogg; charset=binary" if type.include?("application/ogg")     # ff thinks this is a video otherwise and fails
 
-    if ( ! type.include?("application/ogg;") &&
+    if ( ! type.include?("audio/ogg") &&
         params[:supportOGG] != "" &&
-        (!(type.include?("audio/mpeg;") && params[:supportMP3] != "")))
-
-        content_type  "application/ogg; charset=binary"
+        (!(type.include?("audio/mpeg") && params[:supportMP3] != "")))
+        puts "convert to ogg"
+        content_type  "audio/ogg; charset=binary"
 
         if request.env["HTTP_RANGE"]
             requestStart = request.env["HTTP_RANGE"].gsub(/bytes=([0-9]*)-/) { $1 }
@@ -266,9 +268,9 @@ get %r{/track/([0-9]+)} do |id|
         serveTranscodedFile(stdin, stdout, stderr)
         return
     else
-        if ((params[:supportMP3] != "" && ! type.include?("audio/mpeg;")) &&
-            (!(params[:supportOGG] != "" && type.include?("application/ogg;"))))
-
+        if ((params[:supportMP3] != "" && ! type.include?("audio/mpeg")) &&
+            (!(params[:supportOGG] != "" && type.include?("audio/ogg"))))
+            puts "convert to mp3"
             content_type  "audio/mpeg; charset=binary"
             headers "Content-Length" => File.size(path).to_s, "Last_Modified" => DateTime.now.httpdate
             stdin, stdout, stderr  = Open3.popen3("ffmpeg", "-loglevel", "quiet",
@@ -281,7 +283,7 @@ get %r{/track/([0-9]+)} do |id|
             return
         end
     end
-
+    
     content_type type
     response['Cache-Control'] = "public, max-age=31536000"   # NOTE: chrome doesn't cache the audio regardless
     send_file path, :type => type, :last_modified => DateTime.now.httpdate
