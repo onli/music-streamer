@@ -188,9 +188,29 @@ function addPlayerFunctions() {
         });
         
         transferPlayerState(player, oldPlayer);
-        source.src = "/track/" + songs[index].id +"?supportMP3="+ player.canPlayType("audio/mpeg") + "&supportOGG="+ player.canPlayType("audio/ogg");
+        
+        var src = "/track/" + songs[index].id +"?supportMP3="+ player.canPlayType("audio/mpeg") + "&supportOGG="+ player.canPlayType("audio/ogg");
+        localforage.getItem(src).then(function (response) {
+            if (response) {
+                var blob = new Blob(new Array(new Int8Array(response)));
+                source.src = window.URL.createObjectURL(blob);
+                return player
+            } else {
+                var request = new XMLHttpRequest();
+
+                request.open('GET', src, true); 
+                request.responseType = 'arraybuffer';
+                var context = new AudioContext();
+                request.onload = function() { 
+                    localforage.setItem(src, request.response);
+                }
+                request.send();
+            }
+        });
+        
+        source.src = src;
         return player
-    }
+    }    
 
     function setPlaylistTo(index) {
         var activeTrack = document.querySelector('.active')
