@@ -192,25 +192,29 @@ function addPlayerFunctions() {
         var src = "/track/" + songs[index].id +"?supportMP3="+ player.canPlayType("audio/mpeg") + "&supportOGG="+ player.canPlayType("audio/ogg");
         localforage.getItem(src).then(function (response) {
             if (response) {
-                var blob = new Blob(new Array(new Int8Array(response)));
-                source.src = window.URL.createObjectURL(blob);
+                setBuffer(source, response)
                 return player
             } else {
                 var request = new XMLHttpRequest();
 
                 request.open('GET', src, true); 
                 request.responseType = 'arraybuffer';
-                var context = new AudioContext();
                 request.onload = function() { 
                     localforage.setItem(src, request.response);
+                    // this is an ugly hack. For not downloading the src twice, we hotswap him as soon as this ajax call is finished
+                    setBuffer(source, request.response);
                 }
                 request.send();
             }
         });
-        
         source.src = src;
-        return player
+        return player;
     }    
+
+    function setBuffer(source, buffer) {
+        var blob = new Blob(new Array(new Int8Array(buffer)));
+        source.src = window.URL.createObjectURL(blob);
+    }
 
     function setPlaylistTo(index) {
         var activeTrack = document.querySelector('.active')
