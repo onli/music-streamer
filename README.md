@@ -13,7 +13,6 @@ First, install the requirements:
  * sqlite3
  * libmagic-dev
  * libtag1-dev
- * ffmpeg
 
 Then install the bundle gem
 
