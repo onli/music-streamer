@@ -245,63 +245,8 @@ get %r{/track/([0-9]+)} do |id|
     end
     
     type = "audio/ogg; charset=binary" if type.include?("application/ogg")     # ff thinks this is a video otherwise and fails
-
-    if ( ! type.include?("audio/ogg") &&
-        params[:supportOGG] != "" &&
-        (!(type.include?("audio/mpeg") && params[:supportMP3] != "")))
-        puts "convert to ogg"
-        content_type  "audio/ogg; charset=binary"
-
-        if request.env["HTTP_RANGE"]
-            requestStart = request.env["HTTP_RANGE"].gsub(/bytes=([0-9]*)-/) { $1 }
-        end
-
-        size = File.size(path).to_s
-        headers "Content-Length" => size, "Last_Modified" => DateTime.now.httpdate #, "Accept-Ranges" => "bytes", "Content-Range" => "bytes #0-#{size}/#{size}"
-        stdin, stdout, stderr  = Open3.popen3("ffmpeg", "-loglevel", "quiet",
-                                                        "-i", path,
-                                                        "-f", "ogg",
-                                                        "-y",
-                                                        "-acodec", "libvorbis",
-                                                        "-aq", "5",
-                                                        "-")
-        serveTranscodedFile(stdin, stdout, stderr)
-        return
-    else
-        if ((params[:supportMP3] != "" && ! type.include?("audio/mpeg")) &&
-            (!(params[:supportOGG] != "" && type.include?("audio/ogg"))))
-            puts "convert to mp3"
-            content_type  "audio/mpeg; charset=binary"
-            headers "Content-Length" => File.size(path).to_s, "Last_Modified" => DateTime.now.httpdate
-            stdin, stdout, stderr  = Open3.popen3("ffmpeg", "-loglevel", "quiet",
-                                                            "-i", path,
-                                                            "-f", "mp3",
-                                                            "-y",
-                                                            "-ab", "160k",
-                                                            "-")
-            serveTranscodedFile(stdin, stdout, stderr)
-            return
-        end
-    end
     
     content_type type
     response['Cache-Control'] = "public, max-age=31536000"   # NOTE: chrome doesn't cache the audio regardless
     send_file path, :type => type, :last_modified => DateTime.now.httpdate
-end
-
-def serveTranscodedFile(stdin, stdout, stderr)
-    stream do |out|
-        begin
-            loop do
-                IO.select([stdout]) 
-                out << stdout.read_nonblock(8192)
-            end
-        rescue Errno::EAGAIN
-            retry
-        rescue EOFError            
-            stdin.close 
-            stdout.close
-            stderr.close
-        end
-    end
 end
