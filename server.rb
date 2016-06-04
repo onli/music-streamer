@@ -164,12 +164,13 @@ get '/lyrics' do
     i=0
     begin
         apiSearch = XmlSimple.xml_in(HTTP.get(URI.encode("http://api.chartlyrics.com/apiv1.asmx/SearchLyric?artist=#{params[:artist]}&song=#{params[:track]}")).to_s)
-    rescue IOError => ioe
+    rescue  HTTP::ConnectionError, IOError => ioe
         sleep 10    # give the api more time
         i++
         until i == 2
             retry
         end
+        return "no lyrics found, API down"
     end
     begin
         lyricId = apiSearch["SearchLyricResult"][0]["LyricId"][0]
@@ -182,12 +183,13 @@ get '/lyrics' do
     begin
         lyrics = XmlSimple.xml_in(HTTP.get("http://api.chartlyrics.com/apiv1.asmx/GetLyric?lyricId=#{lyricId}&lyricCheckSum=#{checksum}").to_s)
         return lyrics["Lyric"][0]
-    rescue IOError => ioe
+    rescue  HTTP::ConnectionError, IOError => ioe
         sleep 15
         i++
         until i == 3
             retry
         end
+        return "no lyrics found, API down"
     end
     return "no lyrics found"
     
