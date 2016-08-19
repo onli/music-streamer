@@ -9,7 +9,10 @@ document.querySelector("#updateDB").addEventListener("click", function() {
         
     http.onreadystatechange = function() {
         if (http.readyState == 4 && http.status == 200) {
-            
+            document.querySelector("#indexProgress").setAttribute("max", http.responseText);
+            console.log("tried to set indeprogress to " + http.responseText);
+
+            // now the db update is running, we have to check when the threads are finished
             var httpUpdateDone = new XMLHttpRequest();
             httpUpdateDone.onreadystatechange = function() {
                 if (httpUpdateDone.readyState == 4 && httpUpdateDone.status == 200) {
@@ -60,36 +63,16 @@ document.querySelector("#updateDB").addEventListener("click", function() {
     http.open("POST","/updateDB", true);
     http.send();
 
-    var updateTotalHttp = new XMLHttpRequest();
-
-    updateTotalHttp.onreadystatechange = function() {
-        if (updateTotalHttp.readyState == 4 && updateTotalHttp.status == 200) {
-            document.querySelector("#indexProgress").setAttribute("max", updateTotalHttp.responseText);
-            
-            updateProgressInterval = setInterval(function() {
-                var optionsProgressHttp = new XMLHttpRequest();
-
-                optionsProgressHttp.onreadystatechange = function() {
-                    if (optionsProgressHttp.readyState == 4 && optionsProgressHttp.status == 200) {
-                        if (parseInt(optionsProgressHttp.responseText) >= parseInt(updateTotalHttp.responseText)) {
-                            if (updateProgressInterval != null) {
-                                clearInterval(updateProgressInterval);
-                            }
-                        } else {
-                            document.querySelector("#indexProgress").setAttribute("value", optionsProgressHttp.responseText);
-                        }
-                    }
-                }
-                optionsProgressHttp.open("GET", "/updateProgress", true);
-                optionsProgressHttp.send();
-
-            }, 3000);
+    var updateProgressHttp = new XMLHttpRequest();
+    updateProgressInterval = setInterval(function() {
+        updateProgressHttp.onreadystatechange = function() {
+            if (updateProgressHttp.readyState == 4 && updateProgressHttp.status == 200) {
+                document.querySelector("#indexProgress").setAttribute("value", updateProgressHttp.responseText);
+            }
         }
-    }
-    
-    updateTotalHttp.open("GET", "/updateTotal", true);
-    updateTotalHttp.send();
-
+        updateProgressHttp.open("GET", "/updateProgress", true);
+        updateProgressHttp.send();
+    }, 3000);
 });
 
 function adjustMediaDBHeight() {

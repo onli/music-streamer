@@ -37,7 +37,7 @@ helpers do
                     return true
                 end
             rescue => error
-                puts error
+                warn error
             end
         end
         return false
@@ -131,18 +131,14 @@ get '/guestInput' do
     erb :guestInput, :locals => {:index => params[:index], :mail => ""}
 end
 
+# return the total amount of files to betreated
 post '/updateDB' do
     protected!
-    session[:updateTotal] = Database.new.updateDB
-    "Done"
+    return Database.new.updateDB.to_s
 end
 
 get '/updateProgress' do
     Database.new.updateProgress.to_s
-end
-
-get '/updateTotal' do
-    session[:updateTotal].to_s
 end
 
 get '/updateDone' do
