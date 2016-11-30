@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gem 'ruby-filemagic'
 gem 'sinatra'
-gem 'sinatra-browserid', :git => 'https://github.com/sch1zo/sinatra-browserid'
+gem 'sinatra-portier'
 gem 'taglib-ruby'
 gem 'puma'
 gem 'sqlite3'
